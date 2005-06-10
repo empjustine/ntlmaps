@@ -48,7 +48,7 @@ class AuthProxyServer:
             sys.exit(1)
 
         while(1):
-            s.listen(5)
+            s.listen(self.config['GENERAL']['MAX_CONNECTION_BACKLOG'])
             try:
                 conn, addr = s.accept()
                 if self.config['GENERAL']['ALLOW_EXTERNAL_CLIENTS']:
