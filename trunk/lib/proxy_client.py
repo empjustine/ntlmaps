@@ -20,7 +20,6 @@
 import string, socket, thread, select, time
 import logger, http_header, utils
 import ntlm_auth, basic_auth
-import traceback
 
 class proxy_HTTP_Client:
     ""

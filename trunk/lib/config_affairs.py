@@ -32,14 +32,22 @@ def arrange(conf):
     if conf['GENERAL']['PARENT_PROXY']:
         conf['GENERAL']['AVAILABLE_PROXY_LIST'] = conf['GENERAL']['PARENT_PROXY'].split()
         conf['GENERAL']['PARENT_PROXY'] = conf['GENERAL']['AVAILABLE_PROXY_LIST'].pop()
-        conf['GENERAL']['PARENT_PROXY_PORT'] = int(conf['GENERAL']['PARENT_PROXY_PORT'])
-
+        try:
+            conf['GENERAL']['PARENT_PROXY_PORT'] = int(conf['GENERAL']['PARENT_PROXY_PORT'])
+        except AttributeError:
+            print "ERROR: There is a problem with 'PARENT_PROXY_PORT' in the config (not a number?)"
+            sys.exit(1)
+        try:
+            conf['GENERAL']['PARENT_PROXY_TIMEOUT'] = int(conf['GENERAL']['PARENT_PROXY_TIMEOUT'])
+        except AttributeError:
+            print "ERROR: There is a problem with 'PARENT_PROXY_TIMEOUT' in the config (not a number?)"
+            sys.exit(1)
     try:
         conf['GENERAL']['LISTEN_PORT'] = int(conf['GENERAL']['LISTEN_PORT'])
     except:
         print "ERROR: There is a problem with 'LISTEN_PORT' in the config."
         print "Exit."
-        sys.exit()
+        sys.exit(1)
 
     conf['GENERAL']['HOST'] = socket.gethostname()
     conf['GENERAL']['HOST_IP_LIST'] = socket.gethostbyname_ex(socket.gethostname())[2] + ['127.0.0.1']
@@ -68,11 +76,11 @@ def arrange(conf):
         if not conf['NTLM_AUTH']['NT_DOMAIN']:
             print "ERROR: NT DOMAIN must be set."
             print "Exit."
-            sys.exit()
+            sys.exit(1)
     except:
         print "ERROR: There is a problem with [NTLM] section in the config."
         print "Exit."
-        sys.exit()
+        sys.exit(1)
 
 
     #-----------------------------------------------
@@ -84,7 +92,7 @@ def arrange(conf):
     except:
         print "ERROR: There is a problem with [DEBUG] section in the config."
         print "Exit."
-        sys.exit()
+        sys.exit(1)
 
     # screen activity
     if conf['DEBUG'].has_key('SCR_DEBUG'):

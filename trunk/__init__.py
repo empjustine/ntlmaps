@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
-# This file is part of 'NTLM Authorization Proxy Server'
+# This file is Copyright 2004 Darryl A. Dixon <esrever_otua@pythonhacker.is-a-geek.net>
+# and is part of 'NTLM Authorization Proxy Server',
 # Copyright 2001 Dmitry A. Rozmanov <dima@xenon.spb.ru>
 #
 # NTLM APS is free software; you can redistribute it and/or modify
