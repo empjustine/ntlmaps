@@ -30,7 +30,7 @@ def arrange(conf):
 
     # if we do not use proxy then we do not need its port
     if conf['GENERAL']['PARENT_PROXY']:
-        conf['GENERAL']['AVAILABLE_PROXY_LIST'] = conf['GENERAL']['PARENT_PROXY'].split()
+        conf['GENERAL']['AVAILABLE_PROXY_LIST'] = string.split(conf['GENERAL']['PARENT_PROXY'])
         conf['GENERAL']['PARENT_PROXY'] = conf['GENERAL']['AVAILABLE_PROXY_LIST'].pop()
         conf['GENERAL']['PARENT_PROXY_PORT'] = makeInt(conf['GENERAL']['PARENT_PROXY_PORT'], 'PARENT_PROXY_PORT')
         conf['GENERAL']['PARENT_PROXY_TIMEOUT'] = makeInt(conf['GENERAL']['PARENT_PROXY_TIMEOUT'], 'PARENT_PROXY_TIMEOUT')
