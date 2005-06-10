@@ -1,3 +1,7 @@
+Version 0.9.9.4 Monday 28th February 2005 Darryl Dixon <esrever_otua@users.sourceforge.net>
+- Fix ntlmaps.nsi to reflect changed file locations
+- Fix setup.py to make server.cfg location work properly
+
 Version 0.9.9.3 Thursday 24th February 2005 Darryl Dixon <esrever_otua@users.sourceforge.net>
 - Fix self.monitor with no threadsToKill attribute in server.py
 - Trapped exception in config.py for bogus config file specified with -c
