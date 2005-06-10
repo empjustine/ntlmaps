@@ -45,19 +45,19 @@ mkdir -p $RPM_BUILD_ROOT%{ntlmaps_dir}/lib
 mkdir -p $RPM_BUILD_ROOT%{ntlmaps_dir}/doc
 mkdir -p $RPM_BUILD_ROOT%{ntlmaps_dir}/packaging
 mkdir -p $RPM_BUILD_ROOT%{_bindir}
-mkdir -p $RPM_BUILD_ROOT%{_localstatedir}%{ntlmaps_dir}
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/%{name}
 install --mode=0755 --group=root --owner=root main.py \
                                               runserver.bat \
                                               COPYING \
                                               __init__.py \
                                               $RPM_BUILD_ROOT%{ntlmaps_dir}
 install --mode=0755 --group=root --owner=root server.cfg \
-                                              $RPM_BUILD_ROOT%{_localstatedir}%{ntlmaps_dir}
+                                              $RPM_BUILD_ROOT%{_sysconfdir}/%{name}
 install --mode=0755 --group=root --owner=root lib/* $RPM_BUILD_ROOT%{ntlmaps_dir}/lib
 install --mode=0755 --group=root --owner=root doc/* $RPM_BUILD_ROOT%{ntlmaps_dir}/doc
 install --mode=0755 --group=root --owner=root packaging/* $RPM_BUILD_ROOT%{ntlmaps_dir}/packaging
 # Point the default config directory to /var/opt/ntlmaps:
-perl -pi -e 's&(^conf.*?)__init__.*?(\)\)$)&\1"%{_localstatedir}%{ntlmaps_dir}/"\2&' $RPM_BUILD_ROOT%{ntlmaps_dir}/main.py
+perl -pi -e 's&(^conf.*?)__init__.*?(\)\)$)&\1"%{_sysconfdir}/%{name}/"\2&' $RPM_BUILD_ROOT%{ntlmaps_dir}/main.py
 $RPM_BUILD_ROOT%{ntlmaps_dir}/packaging/compile.py $RPM_BUILD_ROOT%{ntlmaps_dir}
 $RPM_BUILD_ROOT%{ntlmaps_dir}/packaging/compile.py $RPM_BUILD_ROOT%{ntlmaps_dir}/lib
 ln -s $PYTHON_SITE%{ntlmaps_dir}/main.py $RPM_BUILD_ROOT%{_bindir}/ntlmaps
@@ -74,9 +74,13 @@ rm -rf %{buildroot}
 #%{_libdir}/*
 %{_bindir}/*
 #%{_mandir}/*
-%{_localstatedir}/*
+%{_sysconfdir}/*
 
 %changelog
+* Fri Jun 10 2005 Darryl Dixon <esrever_otua@pythonhacker.is-a-geek.net>
+  [ntlmaps-0.9.9.4]
+- Move server.cfg to %{_sysconfdir} for better FHS compliance
+
 * Thu Feb 24 2005 Darryl Dixon <esrever_otua@pythonhacker.is-a-geek.net>
   [ntlmaps-0.9.9.3]
 - Update for moved file locations in source dir
