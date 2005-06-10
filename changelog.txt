@@ -1,3 +1,10 @@
+Version 0.9.9.1 Monday 14th February 2005 Darryl Dixon <esrever_otua@users.sourceforge.net>
+- Added HOSTS_TO_BYPASS_PARENT_PROXY configuration item in server.cfg
+- Added processing of HOSTS_TO_BYPASS_PARENT_PROXY to config_affairs.py
+- Moved www_client.py into proxy_client.py -- hide function names behind abstraction
+- Change program flow in server.py and proxy_client.py to support proxy bypass list
+- Cleaned up User-Agent stuff in server.cfg -- added WinXP SP2 IE6 option and made it the default
+
 Version 0.9.9 Thursday 10th February 2005 Darryl Dixon <esrever_otua@users.sourceforge.net>
 - Re-release 0.9.8.11 as 0.9.9 stable
 

@@ -28,12 +28,13 @@ def arrange(conf):
     # GENERAL
     conf['GENERAL']['PARENT_PROXY']
 
-    # if we do not use proxy then we do not need its port
+    # If we do not use PARENT_PROXY then there are some items we just don't need:
     if conf['GENERAL']['PARENT_PROXY']:
         conf['GENERAL']['AVAILABLE_PROXY_LIST'] = string.split(conf['GENERAL']['PARENT_PROXY'])
         conf['GENERAL']['PARENT_PROXY'] = conf['GENERAL']['AVAILABLE_PROXY_LIST'].pop()
         conf['GENERAL']['PARENT_PROXY_PORT'] = makeInt(conf['GENERAL']['PARENT_PROXY_PORT'], 'PARENT_PROXY_PORT')
         conf['GENERAL']['PARENT_PROXY_TIMEOUT'] = makeInt(conf['GENERAL']['PARENT_PROXY_TIMEOUT'], 'PARENT_PROXY_TIMEOUT')
+        conf['GENERAL']['HOSTS_TO_BYPASS_PARENT_PROXY'] = string.split(conf['GENERAL']['HOSTS_TO_BYPASS_PARENT_PROXY'])
     try:
         conf['GENERAL']['MAX_CONNECTION_BACKLOG'] = int(conf['GENERAL']['MAX_CONNECTION_BACKLOG'])
     except ValueError:
