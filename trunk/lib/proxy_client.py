@@ -721,6 +721,14 @@ class proxy_HTTP_Client:
             self.logger.log('Failed.\n')
             self.exit()
             thread.exit()
+        if self.client_head_obj.get_http_method() == 'CONNECT':
+            self.logger.log('*** Generating server HTTP response...')
+            buffer = 'HTTP/1.1 200 Connection established\015\012\015\012'
+            self.rserver_head_obj, rest = http_header.extract_server_header(buffer)
+            self.rserver_buffer = rest
+            self.guess_rserver_data_length()
+            self.logger.log('Done.\n')
+
 
     #-----------------------------------------------------------------------
     def www_fix_client_header(self):
@@ -769,6 +777,20 @@ class proxy_HTTP_Client:
 
         # Show reworked header.
         self.logger.log('*** New client header:\n=====\n' + self.client_head_obj.__repr__())
+
+    #-----------------------------------------------------------------------
+    def send_client_header(self):
+        if self.client_head_obj.get_http_method() == 'CONNECT':
+            self.client_header_sent = 1
+        else:
+            self.logger.log('*** Sending client request header to remote server...')
+            ok = self.client_head_obj.send(self.rserver_socket)
+            if ok:
+                self.client_header_sent = 1
+                self.logger.log('Done.\n')
+            else:
+                self.rserver_socket_closed = 1
+                self.logger.log('Failed.\n')
 
     #-----------------------------------------------------------------------
     def www_check_connected_remote_server(self):
