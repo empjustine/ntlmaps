@@ -25,12 +25,12 @@ class AuthProxyServer:
 
     #--------------------------------------------------------------
     def __init__(self, config):
-        ""
         self.config = config
         self.MyHost = ''
         self.ListenPort = self.config['GENERAL']['LISTEN_PORT']
         self.sigLock = thread.allocate_lock() # For locking in the sigHandler
         self.monLock = thread.allocate_lock() # For keeping the monitor thread sane
+        self.watchUpstream = 0
         if not self.config['NTLM_AUTH']['NTLM_TO_BASIC']:
             if not self.config['NTLM_AUTH']['PASSWORD']:
                 tries = 3
@@ -51,10 +51,11 @@ class AuthProxyServer:
 
     #--------------------------------------------------------------
     def run(self):
-        ""
-        self.monitor = monitor_upstream.monitorThread(self.config, signal.SIGINT)
         signal.signal(signal.SIGINT, self.sigHandler)
-        thread.start_new_thread(self.monitor.run, ())
+        if self.config['GENERAL']['PARENT_PROXY'] and self.config['GENERAL']['AVAILABLE_PROXY_LIST']:
+            self.watchUpstream = 1
+            self.monitor = monitor_upstream.monitorThread(self.config, signal.SIGINT)
+            thread.start_new_thread(self.monitor.run, ())
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.bind((self.MyHost, self.ListenPort))
@@ -79,25 +80,27 @@ class AuthProxyServer:
 
     #--------------------------------------------------------------
     def client_run(self, conn, addr):
-        ""
-        # Locking here is really more of a 'nice to have';
-        # if performance suffers on heavy load we can trade
-        # drops here for drops on bad proxy later.
-        self.monLock.acquire()
         if self.config['GENERAL']['PARENT_PROXY']:
             # working with MS Proxy
-            c = proxy_client.proxy_HTTP_Client(conn, addr, self.config)
+            if self.watchUpstream:
+                # Locking here is really more of a 'nice to have';
+                # if performance suffers on heavy load we can trade
+                # drops here for drops on bad proxy later.
+                self.monLock.acquire()
+                c = proxy_client.proxy_HTTP_Client(conn, addr, self.config)
+                self.monitor.threadsToKill.append(c)
+                self.monLock.release()
+            else:
+                c = proxy_client.proxy_HTTP_Client(conn, addr, self.config)
         else:
             # working with MS IIS and any other
             c = www_client.www_HTTP_Client(conn, addr, self.config)
-        self.monitor.threadsToKill.append(c)
-        self.monLock.release()
         thread.start_new_thread(c.run, ())
 
     #--------------------------------------------------------------
     def sigHandler(self, signum=None, frame=None):
         if signum == signal.SIGINT:
-            if self.config['GENERAL']['PARENT_PROXY']:
+            if self.watchUpstream:
                 if self.sigLock.acquire(0):
                     old_monitor = self.monitor
                     self.config['GENERAL']['AVAILABLE_PROXY_LIST'].insert(0, self.config['GENERAL']['PARENT_PROXY'])

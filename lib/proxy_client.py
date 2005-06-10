@@ -18,11 +18,9 @@
 #
 
 import string, socket, thread, select, time
-import logger, http_header, utils
-import ntlm_auth, basic_auth
+import logger, http_header, utils, ntlm_auth, basic_auth
 
 class proxy_HTTP_Client:
-    ""
 
     #-----------------------------------------------------------------------
     def __init__(self, client_socket, address, config):
