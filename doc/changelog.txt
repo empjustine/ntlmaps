@@ -1,4 +1,7 @@
-Version 0.9.9.4 Monday 28th February 2005 Darryl Dixon <esrever_otua@users.sourceforge.net>
+Version 0.9.9.4 Friday 10th June 2005 Darryl Dixon <esrever_otua@users.sourceforge.net>
+- Minor fixups in ntlmaps.spec for better FHS and ntlmaps.nsi for Uninstaller correctness
+- PATCH sourceforge ID#1214559: Add patch for CONNECT support in Direct mode
+- PATCH sourceforge ID#1206709: Add patch for DIRECT_CONNECT_IF_POSSIBLE in proxy_client.py and config_affairs.py
 - Fix ntlmaps.nsi to reflect changed file locations
 - Fix setup.py to make server.cfg location work properly
 
