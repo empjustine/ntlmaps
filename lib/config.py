@@ -17,7 +17,7 @@
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 #
 
-import string, getopt
+import string, getopt, os, sys
 
 #-------------------------------------------------------------------------------------------
 def read_config(fname):
@@ -54,7 +54,13 @@ def findConfigFileNameInArgv(argv, configFileDir=''):
     for i in optionsList:
         option, value = i
         if option == '-c' and value != '':
-            configFileName = value
-            break
+            try:
+                handle = open(value)
+                handle.close()
+                configFileName = value
+                break
+            except IOError:
+                print "ERROR: Config file specified with '-c' either does not exist or is not readable."
+                sys.exit(1)
 
     return configFileName

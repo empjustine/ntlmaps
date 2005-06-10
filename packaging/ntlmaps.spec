@@ -3,7 +3,7 @@
 # This program may be freely redistributed under the terms of the GNU GPL
 
 %define name ntlmaps
-%define ver 0.9.9.2
+%define ver 0.9.9.3
 %define rel 1
 
 Summary: NTLMAPS is a proxy server that authenticates requests to Microsoft proxies that require NTLM authentication.
@@ -35,29 +35,30 @@ is written in Python 1.5.2.
 
 %install
 if [ -d $RPM_BUILD_ROOT ]; then rm -rf $RPM_BUILD_ROOT; fi
+%define ntlmaps_dir /opt/ntlmaps
 # This can be vastly improved, but it Works For Now!(tm)   ;)
 mkdir -p $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT/opt/ntlmaps
-mkdir -p $RPM_BUILD_ROOT/opt/ntlmaps/lib
-mkdir -p $RPM_BUILD_ROOT/opt/ntlmaps/doc
-mkdir -p $RPM_BUILD_ROOT/opt/ntlmaps/packaging
-install --mode=0755 --group=root --owner=root changelog.txt \
-                                              Install.txt \
-                                              main.py \
-                                              readme.txt \
+mkdir -p $RPM_BUILD_ROOT%{ntlmaps_dir}
+mkdir -p $RPM_BUILD_ROOT%{ntlmaps_dir}/lib
+mkdir -p $RPM_BUILD_ROOT%{ntlmaps_dir}/doc
+mkdir -p $RPM_BUILD_ROOT%{ntlmaps_dir}/packaging
+mkdir -p $RPM_BUILD_ROOT%{_bindir}
+mkdir -p $RPM_BUILD_ROOT%{_localstatedir}%{ntlmaps_dir}
+install --mode=0755 --group=root --owner=root main.py \
                                               runserver.bat \
                                               COPYING \
                                               __init__.py \
-                                              research.txt \
-                                              server.cfg \
-                                              $RPM_BUILD_ROOT/opt/ntlmaps
-install --mode=0755 --group=root --owner=root lib/* $RPM_BUILD_ROOT/opt/ntlmaps/lib
-install --mode=0755 --group=root --owner=root doc/* $RPM_BUILD_ROOT/opt/ntlmaps/doc
-install --mode=0755 --group=root --owner=root packaging/* $RPM_BUILD_ROOT/opt/ntlmaps/packaging
-$RPM_BUILD_ROOT/opt/ntlmaps/packaging/compile.py $RPM_BUILD_ROOT/opt/ntlmaps
-$RPM_BUILD_ROOT/opt/ntlmaps/packaging/compile.py $RPM_BUILD_ROOT/opt/ntlmaps/lib
-mkdir -p $RPM_BUILD_ROOT%{_bindir}
-ln -s $PYTHON_SITE/opt/ntlmaps/main.py $RPM_BUILD_ROOT%{_bindir}/ntlmaps
+                                              $RPM_BUILD_ROOT%{ntlmaps_dir}
+install --mode=0755 --group=root --owner=root server.cfg \
+                                              $RPM_BUILD_ROOT%{_localstatedir}%{ntlmaps_dir}
+install --mode=0755 --group=root --owner=root lib/* $RPM_BUILD_ROOT%{ntlmaps_dir}/lib
+install --mode=0755 --group=root --owner=root doc/* $RPM_BUILD_ROOT%{ntlmaps_dir}/doc
+install --mode=0755 --group=root --owner=root packaging/* $RPM_BUILD_ROOT%{ntlmaps_dir}/packaging
+# Point the default config directory to /var/opt/ntlmaps:
+perl -pi -e 's&(^conf.*?)__init__.*?(\)\)$)&\1"%{_localstatedir}%{ntlmaps_dir}/"\2&' $RPM_BUILD_ROOT%{ntlmaps_dir}/main.py
+$RPM_BUILD_ROOT%{ntlmaps_dir}/packaging/compile.py $RPM_BUILD_ROOT%{ntlmaps_dir}
+$RPM_BUILD_ROOT%{ntlmaps_dir}/packaging/compile.py $RPM_BUILD_ROOT%{ntlmaps_dir}/lib
+ln -s $PYTHON_SITE%{ntlmaps_dir}/main.py $RPM_BUILD_ROOT%{_bindir}/ntlmaps
 #mkdir -p $RPM_BUILD_ROOT%{_mandir}/man1
 #install --mode=0644 --group=root --owner=root ntlmaps.1 $RPM_BUILD_ROOT%{_mandir}/man1
 #gzip $RPM_BUILD_ROOT%{_mandir}/man1/ntlmaps.1
@@ -71,8 +72,15 @@ rm -rf %{buildroot}
 #%{_libdir}/*
 %{_bindir}/*
 #%{_mandir}/*
+%{_localstatedir}/*
 
 %changelog
+* Thu Feb 24 2005 Darryl Dixon <esrever_otua@pythonhacker.is-a-geek.net>
+  [ntlmaps-0.9.9.3]
+- Update for moved file locations in source dir
+- Use %{ntlmaps_dir}
+- Move server.cfg to %{_localstatedir}%{ntlmaps_dir} (/var/opt/ntlmaps)
+
 * Wed Feb 23 2005 Darryl Dixon <esrever_otua@pythonhacker.is-a-geek.net>
   [ntlmaps-0.9.9.2]
 - Initial release of .spec file
