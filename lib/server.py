@@ -17,8 +17,8 @@
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 #
 
-import socket, thread, sys
-import proxy_client, www_client
+import socket, thread, sys, signal
+import proxy_client, www_client, monitor_upstream
 
 #--------------------------------------------------------------
 class AuthProxyServer:
@@ -34,25 +34,31 @@ class AuthProxyServer:
     #--------------------------------------------------------------
     def run(self):
         ""
+        self.monitor = monitor_upstream.monitorThread(self.config)
+        thread.start_new_thread(self.monitor.run, ())
+        signal.signal(signal.SIGINT, self.monitor.sigHandler)
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.bind((self.MyHost, self.ListenPort))
         except:
             print "ERROR: Could not create socket. Possible it is used by other process."
             print "Bye."
-            sys.exit()
+            sys.exit(1)
 
         while(1):
             s.listen(5)
-            conn, addr = s.accept()
-            if self.config['GENERAL']['ALLOW_EXTERNAL_CLIENTS']:
-                self.client_run(conn, addr)
-            else:
-                if addr[0] in self.config['GENERAL']['FRIENDLY_IPS']:
+            try:
+                conn, addr = s.accept()
+                if self.config['GENERAL']['ALLOW_EXTERNAL_CLIENTS']:
                     self.client_run(conn, addr)
                 else:
-                    conn.close()
-
+                    if addr[0] in self.config['GENERAL']['FRIENDLY_IPS']:
+                        self.client_run(conn, addr)
+                    else:
+                        conn.close()
+            except socket.error:
+                pass
+                #print "Trapped socket.error in Main"
         s.close()
 
     #--------------------------------------------------------------
@@ -64,6 +70,5 @@ class AuthProxyServer:
         else:
             # working with MS IIS and any other
             c = www_client.www_HTTP_Client(conn, addr, self.config)
-
+        self.monitor.threadsToKill.append(c)
         thread.start_new_thread(c.run, ())
-

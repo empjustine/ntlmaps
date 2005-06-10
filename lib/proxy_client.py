@@ -20,15 +20,15 @@
 import string, socket, thread, select, time
 import logger, http_header, utils
 import ntlm_auth, basic_auth
+import traceback
 
 class proxy_HTTP_Client:
     ""
 
     #-----------------------------------------------------------------------
     def __init__(self, client_socket, address, config):
-        ""
+        ""     
         self.config = config
-
         self.ntlm_auther = ntlm_auth.ntlm_auther()
         # experimental code
         self.basic_auther = basic_auth.basic_auther()
@@ -81,7 +81,7 @@ class proxy_HTTP_Client:
 
         # init record to debug_log
         self.logger.log('%s Version %s\n' % (time.strftime('%d.%m.%Y %H:%M:%S', time.localtime(time.time())), self.config['GENERAL']['VERSION']))
-
+    
     #-----------------------------------------------------------------------
     def run(self):
         ""
@@ -104,7 +104,10 @@ class proxy_HTTP_Client:
                 # So let's try change socket_closed to socket. which is None if there is no
                 # connection
                 if not self.rserver_socket_closed:
-                    select.select([self.rserver_socket.fileno(), self.client_socket.fileno()], [], [], 5.0)
+                    try:
+                        select.select([self.rserver_socket.fileno(), self.client_socket.fileno()], [], [], 5.0)
+                    except socket.error:
+                        thread.exit()
                 else:
                     # if there is no connection to remote server
                     select.select([self.client_socket.fileno()], [], [], 5.0)
@@ -180,7 +183,11 @@ class proxy_HTTP_Client:
     #-----------------------------------------------------------------------
     def run_rserver_loop(self):
         ""
-        res = select.select([self.rserver_socket.fileno()], [], [], 0.0)
+        try:
+            res = select.select([self.rserver_socket.fileno()], [], [], 0.0)
+        except socket.error:
+            # TODO: add logger entry for this event
+            thread.exit()
         if res[0]:
             try:
                 socket_data = self.rserver_socket.recv(4096)
@@ -221,7 +228,10 @@ class proxy_HTTP_Client:
     #-----------------------------------------------------------------------
     def run_client_loop(self):
         ""
-        res = select.select([self.client_socket.fileno()], [], [], 0.0)
+        try:
+            res = select.select([self.client_socket.fileno()], [], [], 0.0)
+        except socket.error:
+            thread.exit()
         if res[0]:
             try:
                 socket_data = self.client_socket.recv(4096)
@@ -241,6 +251,7 @@ class proxy_HTTP_Client:
         self.client_buffer = self.client_buffer + socket_data
 
         if not self.client_head_obj and not self.tunnel_mode:
+            # TODO: debug self.client_head_obj
             self.client_head_obj, rest = http_header.extract_client_header(self.client_buffer)
 
             if self.client_head_obj:
@@ -410,7 +421,13 @@ class proxy_HTTP_Client:
     def guess_rserver_data_length(self):
         ""
         code = self.rserver_head_obj.get_http_code()
-        c_method = self.client_head_obj.get_http_method()
+        try:
+            c_method = self.client_head_obj.get_http_method()
+        except:
+            #TODO: add a logging entry for this event (problem with
+            #      remote end of connection) and find exactly which
+            #      exception is being thrown and trap only it...
+            thread.exit()
 
         if code == '304' or code == '204' or code[0] == '1':
             self.rserver_all_got = 1

@@ -18,10 +18,9 @@
 # Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 #
+import __init__
 
 import socket, thread, sys, getpass, string
-
-sys.path.append('lib')
 
 import server, logger
 import config, ntlm_procs, config_affairs
@@ -30,16 +29,16 @@ import config, ntlm_procs, config_affairs
 #--------------------------------------------------------------
 # config affairs
 # look for default config name in lib/config.py
-conf = config.read_config(config.findConfigFileNameInArgv(sys.argv))
+conf = config.read_config(config.findConfigFileNameInArgv(sys.argv, __init__.ntlmaps_dir+'/'))
 
-conf['GENERAL']['VERSION'] = '0.9.8'
+conf['GENERAL']['VERSION'] = '0.9.8.2'
 
 config = config_affairs.arrange(conf)
 
 #--------------------------------------------------------------
 print 'NTLM authorization Proxy Server v%s' % conf['GENERAL']['VERSION'],
 print 'at "%s:%s".' % (conf['GENERAL']['HOST'], conf['GENERAL']['LISTEN_PORT'])
-print '2001-2002 (C) by Dmitry Rozmanov'
+print '2001-2004 (C) by Dmitry Rozmanov'
 #print '\nAccepting connections'
 
 #--------------------------------------------------------------

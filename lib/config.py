@@ -46,13 +46,13 @@ def read_config(fname):
 #-------------------------------------------------------------------------------------------
 # Thanks Janek Schwarz <j.schwarz@i-change.de> for this addition.
 
-def findConfigFileNameInArgv(argv):
+def findConfigFileNameInArgv(argv, configFileDir=''):
     """ Resolves configuration file. Resolution goes as follows:
     if the command switch '-c' is given it's argument is taken as
     the config file. Otherwise the function falls back to
     'server.cfg' in the current directory. """
 
-    configFileName = 'server.cfg'
+    configFileName = configFileDir+'server.cfg'
 
     optionsList, notUsedArguments = getopt.getopt(argv[1:], 'c:')
 

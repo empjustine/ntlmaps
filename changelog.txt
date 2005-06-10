@@ -1,3 +1,13 @@
+Version 0.9.8.2 Friday 5th November 2004
+- Added extra exception trapping for fault conditions
+- Added __init__.py to begin making ntlmaps relocatable
+- Changed from SIGUSR1 to SIGINT to make more portable
+- Removed two non-ascii comments causing warnings for compiler
+
+Version 0.9.8.1 Monday 1st November 2004
+- Added monitor thread for upstream mode that detects upstream proxy failure
+- Added ability to specify multiple upstream proxies for failover
+
 Verison 0.9.8 - Fri May 17 04:07:20 MSD 2002
 - internal redesign
 - config file redesign
