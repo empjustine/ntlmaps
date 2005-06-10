@@ -302,18 +302,26 @@ class HTTP_CLIENT_HEAD(HTTP_HEAD):
     # not all servers want to answer to requests with full url in request
     # but want have net location in 'Host' value and path in url.
     def make_right_header(self):
-        url_tuple = urlparse.urlparse(self.get_http_url())
-        net_location = url_tuple[1]
+        if self.get_http_method() == 'CONNECT':
+            net_location = self.get_http_url()
+        else:
+            url_tuple = urlparse.urlparse(self.get_http_url())
+            net_location = url_tuple[1]
+
         self.replace_param_value('Host', net_location)
 
-        path = urlparse.urlunparse(tuple(['', ''] + list(url_tuple[2:])))
-        self.set_http_url(path)
+        if self.get_http_method() != 'CONNECT':
+            path = urlparse.urlunparse(tuple(['', ''] + list(url_tuple[2:])))
+            self.set_http_url(path)
 
     #-------------------------------
     def get_http_server(self):
         # trying to get host from url
-        url_tuple = urlparse.urlparse(self.get_http_url())
-        net_location = url_tuple[1]
+        if self.get_http_method() == 'CONNECT':
+            net_location = self.get_http_url()
+        else:
+            url_tuple = urlparse.urlparse(self.get_http_url())
+            net_location = url_tuple[1]
 
         # if there was no host in url then get it from 'Host' value
         if not net_location:
