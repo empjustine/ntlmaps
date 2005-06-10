@@ -33,40 +33,36 @@ class monitorThread:
             
     #--------------------------------------------------------------
     def run(self):
-        if self.config['GENERAL']['PARENT_PROXY'] and self.config['GENERAL']['AVAILABLE_PROXY_LIST']:
-            while self.alive:
-                self.alarmThread = timerThread(self.timeoutSeconds, self.alive, self.die_sig)
-                thread.start_new_thread(self.alarmThread.run, ())
-                # We poll the current proxy for responsiveness...           
-                # TODO: add logger entries for all these exceptions
+        while self.alive:
+            self.alarmThread = timerThread(self.timeoutSeconds, self.alive, self.die_sig)
+            thread.start_new_thread(self.alarmThread.run, ())
+            # We poll the current proxy for responsiveness...           
+            # TODO: add logger entries for all these exceptions
+            try:
+                conn = httplib.HTTPConnection(self.config['GENERAL']['PARENT_PROXY'], self.config['GENERAL']['PARENT_PROXY_PORT'])
                 try:
-                    conn = httplib.HTTPConnection(self.config['GENERAL']['PARENT_PROXY'], self.config['GENERAL']['PARENT_PROXY_PORT'])
+                    conn.request("GET", "/")
                     try:
-                        conn.request("GET", "/")
+                        data = conn.getresponse()
                         try:
-                            data = conn.getresponse()
-                            try:
-                                if not data.read():    # Got a b0rked response?
-                                    self.die()
-                            except AssertionError: # Yup, got a wacky response
+                            if not data.read():    # Got a b0rked response?
                                 self.die()
-                            conn.close()
-                        except AttributeError:    # Didn't somehow connect?
+                        except AssertionError: # Yup, got a wacky response
                             self.die()
-                    except socket.error:    # Service not running/listening on specified port?
+                        conn.close()
+                    except (AttributeError, httplib.BadStatusLine):    # Didn't somehow connect?
                         self.die()
-                except socket.gaierror:    # Name resolution error for this proxy?
+                except socket.error:    # Service not running/listening on specified port?
                     self.die()
-                self.alarmThread.alive = 0
-                time.sleep(self.timeoutSeconds+1)
-                # Maximum timeout before hitting bottom of this loop is therefore
-                # at most self.timeoutSeconds*2+1 and at least self.timeoutSeconds.
-                # Hopefully this is a reasonable tradeoff between noticeable
-                # service outage for user and creaming the proxy with stacks of
-                # our spurious requests... :)
-        else:
-            while self.alive:
-                pass #'Gracefully' spin without returning from function
+            except socket.gaierror:    # Name resolution error for this proxy?
+                self.die()
+            self.alarmThread.alive = 0
+            time.sleep(self.timeoutSeconds+1)
+            # Maximum timeout before hitting bottom of this loop is therefore
+            # at most self.timeoutSeconds*2+1 and at least self.timeoutSeconds+1.
+            # Hopefully this is a reasonable tradeoff between noticeable
+            # service outage for user and creaming the proxy with stacks of
+            # our spurious requests... :)
 
     def die(self):
         try:
