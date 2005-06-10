@@ -1,8 +1,8 @@
-README file for 'NTLM Authorization Proxy Server' v.0.9.9.1
+README file for 'NTLM Authorization Proxy Server' v0.9.9.2
 
 Release Purpose:
 ----------------
-This is a re-release of 0.9.8.11 as 0.9.9 'stable'. See changelog.txt for full description.
+Mainly feature enhancements. See changelog.txt for full description.
 
 There is an issue with APS working as a standalone proxy. It serves requests from
 an http-client one by one and allows persistent connections, then it may receive several
