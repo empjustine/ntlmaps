@@ -1,3 +1,6 @@
+Version 0.9.9 Thursday 10th February 2005 Darryl Dixon <esrever_otua@users.sourceforge.net>
+- Re-release 0.9.8.11 as 0.9.9 stable
+
 Version 0.9.8.11 Friday 14th January 2005 Darryl Dixon <esrever_otua@users.sourceforge.net>
 - Fixed use of split() function that broke Python 1.5.2 compatibility in config_affairs.py
 - Added traps for ValueError in proxy_client.py for Python 1.5.2 compatibility
