@@ -1,31 +1,35 @@
+Version 0.9.8.6 Thursday 11th November 2004
+- Added MAX_CONNECTION_BACKLOG configuration item
+- FEATURE/BUGFIX sourceforge request ID#831606: MAX_CONNECTION_BACKLOG now allows configurable listener
+- Clarified some historical entries in changelog
+- Minor cleanups of error text in config_affairs.py
+
 Version 0.9.8.5 Wednesday 10th November 2004
 - Added PARENT_PROXY_TIMEOUT configuration item
-- Squashed a typo bug in config_affairs for HOST_IP_LIST
+- Squashed a typo bug in config_affairs.py for HOST_IP_LIST
 - Updated Install.txt
-- BUGFIX sourceforge request ID#707725: Fixed 2 instances of error in
-  ntlm_auth
+- BUGFIX sourceforge request ID#707725 and ID#1061067: Fixed 2 instances of error in ntlm_auth.py
 
 Version 0.9.8.4 Tuesday 9th November 2004
 - Changed method of delivering signal to just call sigHandler() directly
-- Seriously reworked programme flow of monitor thread to accomodate change
-  above
+- Seriously reworked programme flow of monitor_upstream.py to accomodate change above
 - Added locking of critical sections to keep threads sane
-- Caught another exception
+- Caught another exception in proxy_client.py
 
 Version 0.9.8.3 Sunday 7th November 2004
 - Changed SIGALRM timer to new custom timerThread() (more portable)
 - Cleaned up signal handling to accomodate new timer implementation
-- Caught some more exceptions in proxy_client
+- Caught some more exceptions in proxy_client.py
 - Fixed corner case which b0rked timer
 
 Version 0.9.8.2 Friday 5th November 2004
-- Added extra exception trapping for fault conditions
+- Added extra exception trapping for fault conditions in proxy_client.py
 - Added __init__.py to begin making ntlmaps relocatable
 - Changed from SIGUSR1 to SIGINT to make more portable
-- Removed two non-ascii comments causing warnings for compiler
+- Removed two non-ascii comments causing warnings from compiler
 
 Version 0.9.8.1 Monday 1st November 2004
-- Added monitor thread for upstream mode that detects upstream proxy failure
+- Added monitor_upstream.py for upstream mode that detects upstream proxy failure
 - Added ability to specify multiple upstream proxies for failover
 
 Verison 0.9.8 - Fri May 17 04:07:20 MSD 2002

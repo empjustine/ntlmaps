@@ -44,10 +44,18 @@ def arrange(conf):
             sys.exit(1)
     try:
         conf['GENERAL']['LISTEN_PORT'] = int(conf['GENERAL']['LISTEN_PORT'])
-    except:
-        print "ERROR: There is a problem with 'LISTEN_PORT' in the config."
-        print "Exit."
+    except AttributeError:
+        print "ERROR: There is a problem with 'LISTEN_PORT' in the config (not a number?)"
         sys.exit(1)
+
+    try:
+        conf['GENERAL']['MAX_CONNECTION_BACKLOG'] = int(conf['GENERAL']['MAX_CONNECTION_BACKLOG'])
+    except AttributeError:
+        if conf['GENERAL']['MAX_CONNECTION_BACKLOG'] == 'SOMAXCONN':
+            conf['GENERAL']['MAX_CONNECTION_BACKLOG'] = socket.SOMAXCONN
+        else:
+            print "ERROR: There is a problem with 'MAX_CONNECTION_BACKLOG' in the config (neither a number nor 'SOMAXCONN'?)"
+            sys.exit(1)
 
     conf['GENERAL']['HOST'] = socket.gethostname()
     conf['GENERAL']['HOST_IP_LIST'] = socket.gethostbyname_ex(socket.gethostname())[2] + ['127.0.0.1']
