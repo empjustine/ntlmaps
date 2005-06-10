@@ -426,7 +426,7 @@ class proxy_HTTP_Client:
             c_method = self.client_head_obj.get_http_method()
         except AttributeError:
             # Problem with remote end of connection
-            self.logger.log('*** Exception getting http code from client_head_obj -- remote end closed connection??\n' % code)
+            self.logger.log('*** Exception getting http code from client_head_obj -- remote end closed connection??\n')
             thread.exit()
 
         if code == '304' or code == '204' or code[0] == '1':

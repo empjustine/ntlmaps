@@ -1,3 +1,9 @@
+Version 0.9.8.8 Tuesday 16th November 2004 Darryl Dixon <esrever_otua@users.sourceforge.net>
+- Squashed bug introduced in 0.9.8.7 with bad logger entry in proxy_client.py
+- Cleaned up handling of 'PASSWORD' config item in config_affairs.py to squash potential bug
+- Modified server.cfg to enhance description of 'PASSWORD' and 'USER' items
+- Slightly updated the readme.txt
+
 Version 0.9.8.7 Friday 12th November 2004 Darryl Dixon <esrever_otua@users.sourceforge.net>
 - BUGFIX sourceforge ID#798824: Modified exception trap for  c_method = self.client_head_obj.get_http_method() in proxy_client.py
 - Replaced several TODOs from proxy_client.py with logger entries

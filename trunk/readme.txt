@@ -1,4 +1,4 @@
-README file for 'NTLM Authorization Proxy Server' v.0.9.8.7
+README file for 'NTLM Authorization Proxy Server' v.0.9.8.8
 
 Release Purpose:
 ----------------
@@ -13,8 +13,7 @@ in your browser when you are using APS for web (not proxy) authentication and su
 banner rich evironment.
 
 This is a beta version, so I expect it to have bugs. If something goes
-wrong, first e-mail me and ask. Then I'll tell you what to do, depending
-on the symptoms.
+wrong, please log a support request on the sourceforge.net project page.
 
 Please read this file to the end, it contains useful installation
 instructions and other information.

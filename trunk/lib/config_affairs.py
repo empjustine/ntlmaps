@@ -68,6 +68,8 @@ def arrange(conf):
     if not conf['NTLM_AUTH']['NT_DOMAIN']:
         print "ERROR: NT DOMAIN must be set."
         sys.exit(1)
+    if not conf['NTLM_AUTH'].has_key('PASSWORD'):
+        conf['NTLM_AUTH']['PASSWORD'] = ''
 
 
     #-----------------------------------------------
