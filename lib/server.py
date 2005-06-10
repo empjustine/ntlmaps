@@ -17,8 +17,8 @@
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 #
 
-import socket, thread, sys, signal
-import proxy_client, www_client, monitor_upstream
+import socket, thread, sys, signal, getpass
+import proxy_client, www_client, monitor_upstream, ntlm_procs
 
 #--------------------------------------------------------------
 class AuthProxyServer:
@@ -32,6 +32,23 @@ class AuthProxyServer:
         self.ListenPort = self.config['GENERAL']['LISTEN_PORT']
         self.sigLock = thread.allocate_lock() # For locking in the sigHandler
         self.monLock = thread.allocate_lock() # For keeping the monitor thread sane
+        if not self.config['NTLM_AUTH']['NTLM_TO_BASIC']:
+            if not self.config['NTLM_AUTH']['PASSWORD']:
+                tries = 3
+                print '------------------------'
+                while tries and (not self.config['NTLM_AUTH']['PASSWORD']):
+                    tries = tries - 1
+                    self.config['NTLM_AUTH']['PASSWORD'] = getpass.getpass('Your NT password to be used:')
+            if not self.config['NTLM_AUTH']['PASSWORD']:
+                print 'Sorry. PASSWORD is required, bye.'
+                sys.exit(1)
+        else:
+            # TODO: migrate this properly so placeholders aren't required
+            self.config['NTLM_AUTH']['USER'] = 'placeholder_username'
+            self.config['NTLM_AUTH']['PASSWORD'] = 'placeholder_password'
+        # hashed passwords calculation
+        self.config['NTLM_AUTH']['LM_HASHED_PW'] = ntlm_procs.create_LM_hashed_password(self.config['NTLM_AUTH']['PASSWORD'])
+        self.config['NTLM_AUTH']['NT_HASHED_PW'] = ntlm_procs.create_NT_hashed_password(self.config['NTLM_AUTH']['PASSWORD'])
 
     #--------------------------------------------------------------
     def run(self):
@@ -42,11 +59,10 @@ class AuthProxyServer:
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.bind((self.MyHost, self.ListenPort))
-        except:
-            print "ERROR: Could not create socket. Possible it is used by other process."
-            print "Bye."
+        except socket.error:
+            print "ERROR: Could not create socket. Possibly it is being used by another process."
             sys.exit(1)
-
+        print 'Now listening at %s on port %s' % (self.config['GENERAL']['HOST'], self.config['GENERAL']['LISTEN_PORT'])
         while(1):
             s.listen(self.config['GENERAL']['MAX_CONNECTION_BACKLOG'])
             try:

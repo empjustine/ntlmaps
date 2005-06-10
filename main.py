@@ -20,10 +20,9 @@
 #
 import __init__
 
-import socket, thread, sys, getpass, string
+import sys
 
-import server, logger
-import config, ntlm_procs, config_affairs
+import server, config, config_affairs
 
 
 #--------------------------------------------------------------
@@ -31,35 +30,15 @@ import config, ntlm_procs, config_affairs
 # look for default config name in lib/config.py
 conf = config.read_config(config.findConfigFileNameInArgv(sys.argv, __init__.ntlmaps_dir+'/'))
 
-conf['GENERAL']['VERSION'] = '0.9.8.6'
+conf['GENERAL']['VERSION'] = '0.9.8.7'
 
 config = config_affairs.arrange(conf)
 
 #--------------------------------------------------------------
-print 'NTLM authorization Proxy Server v%s' % conf['GENERAL']['VERSION'],
-print 'at "%s:%s".' % (conf['GENERAL']['HOST'], conf['GENERAL']['LISTEN_PORT'])
-print '2001-2004 (C) by Dmitry Rozmanov'
-#print '\nAccepting connections'
-
-#--------------------------------------------------------------
-# password from console, if we don't have one in server.cfg
-if not conf['NTLM_AUTH']['PASSWORD']:
-    tries = 3
-    print '------------------------'
-    while tries and (not conf['NTLM_AUTH']['PASSWORD']):
-        tries = tries - 1
-        conf['NTLM_AUTH']['PASSWORD'] = getpass.getpass('Your NT password to be used:')
-
-if not conf['NTLM_AUTH']['PASSWORD']:
-    print 'Sorry. PASSWORD is required. Bye.'
-    sys.exit(1)
-
-#--------------------------------------------------------------
-# hashed passwords calculation
-conf['NTLM_AUTH']['LM_HASHED_PW'] = ntlm_procs.create_LM_hashed_password(conf['NTLM_AUTH']['PASSWORD'])
-conf['NTLM_AUTH']['NT_HASHED_PW'] = ntlm_procs.create_NT_hashed_password(conf['NTLM_AUTH']['PASSWORD'])
+print 'NTLM authorization Proxy Server v%s' % config['GENERAL']['VERSION']
+print 'Copyright (C) 2001-2004 by Dmitry Rozmanov and others.'
 
 #--------------------------------------------------------------
 # let's run it
-serv = server.AuthProxyServer(conf)
+serv = server.AuthProxyServer(config)
 serv.run()

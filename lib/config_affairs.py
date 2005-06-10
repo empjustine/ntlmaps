@@ -32,25 +32,12 @@ def arrange(conf):
     if conf['GENERAL']['PARENT_PROXY']:
         conf['GENERAL']['AVAILABLE_PROXY_LIST'] = conf['GENERAL']['PARENT_PROXY'].split()
         conf['GENERAL']['PARENT_PROXY'] = conf['GENERAL']['AVAILABLE_PROXY_LIST'].pop()
-        try:
-            conf['GENERAL']['PARENT_PROXY_PORT'] = int(conf['GENERAL']['PARENT_PROXY_PORT'])
-        except AttributeError:
-            print "ERROR: There is a problem with 'PARENT_PROXY_PORT' in the config (not a number?)"
-            sys.exit(1)
-        try:
-            conf['GENERAL']['PARENT_PROXY_TIMEOUT'] = int(conf['GENERAL']['PARENT_PROXY_TIMEOUT'])
-        except AttributeError:
-            print "ERROR: There is a problem with 'PARENT_PROXY_TIMEOUT' in the config (not a number?)"
-            sys.exit(1)
-    try:
-        conf['GENERAL']['LISTEN_PORT'] = int(conf['GENERAL']['LISTEN_PORT'])
-    except AttributeError:
-        print "ERROR: There is a problem with 'LISTEN_PORT' in the config (not a number?)"
-        sys.exit(1)
-
+        conf['GENERAL']['PARENT_PROXY_PORT'] = makeInt(conf['GENERAL']['PARENT_PROXY_PORT'], 'PARENT_PROXY_PORT')
+        conf['GENERAL']['PARENT_PROXY_TIMEOUT'] = makeInt(conf['GENERAL']['PARENT_PROXY_TIMEOUT'], 'PARENT_PROXY_TIMEOUT')
+        conf['GENERAL']['LISTEN_PORT'] = makeInt(conf['GENERAL']['LISTEN_PORT'], 'LISTEN_PORT')
     try:
         conf['GENERAL']['MAX_CONNECTION_BACKLOG'] = int(conf['GENERAL']['MAX_CONNECTION_BACKLOG'])
-    except AttributeError:
+    except ValueError:
         if conf['GENERAL']['MAX_CONNECTION_BACKLOG'] == 'SOMAXCONN':
             conf['GENERAL']['MAX_CONNECTION_BACKLOG'] = socket.SOMAXCONN
         else:
@@ -60,10 +47,10 @@ def arrange(conf):
     conf['GENERAL']['HOST'] = socket.gethostname()
     conf['GENERAL']['HOST_IP_LIST'] = socket.gethostbyname_ex(socket.gethostname())[2] + ['127.0.0.1']
 
-    conf['GENERAL']['ALLOW_EXTERNAL_CLIENTS'] = int(conf['GENERAL']['ALLOW_EXTERNAL_CLIENTS'])
+    conf['GENERAL']['ALLOW_EXTERNAL_CLIENTS'] = makeInt(conf['GENERAL']['ALLOW_EXTERNAL_CLIENTS'], 'ALLOW_EXTERNAL_CLIENTS')
     conf['GENERAL']['FRIENDLY_IPS'] = conf['GENERAL']['HOST_IP_LIST'] + string.split(conf['GENERAL']['FRIENDLY_IPS'])
 
-    conf['GENERAL']['URL_LOG'] = int(conf['GENERAL']['URL_LOG'])
+    conf['GENERAL']['URL_LOG'] = makeInt(conf['GENERAL']['URL_LOG'], 'URL_LOG')
     url_logger = logger.Logger('url.log', conf['GENERAL']['URL_LOG'])
     url_logger_lock = thread.allocate_lock()
     conf['GENERAL']['URL_LOGGER'] = url_logger
@@ -74,33 +61,20 @@ def arrange(conf):
     # NTLM_AUTH
     if not conf['NTLM_AUTH'].has_key('NTLM_FLAGS'):
         conf['NTLM_AUTH']['NTLM_FLAGS'] = ''
-    try:
-        #conf['NTLM']['FULL_NTLM'] = int(conf['NTLM']['FULL_NTLM'])
-        conf['NTLM_AUTH']['LM_PART'] = int(conf['NTLM_AUTH']['LM_PART'])
-        conf['NTLM_AUTH']['NT_PART'] = int(conf['NTLM_AUTH']['NT_PART'])
-        conf['NTLM_AUTH']['USER']
-        conf['NTLM_AUTH']['PASSWORD']
-
-        if not conf['NTLM_AUTH']['NT_DOMAIN']:
-            print "ERROR: NT DOMAIN must be set."
-            print "Exit."
-            sys.exit(1)
-    except:
-        print "ERROR: There is a problem with [NTLM] section in the config."
-        print "Exit."
+    #conf['NTLM']['FULL_NTLM'] = makeInt(conf['NTLM']['FULL_NTLM'], 'FULL_NTLM')
+    conf['NTLM_AUTH']['LM_PART'] = makeInt(conf['NTLM_AUTH']['LM_PART'], 'LM_PART')
+    conf['NTLM_AUTH']['NT_PART'] = makeInt(conf['NTLM_AUTH']['NT_PART'], 'NT_PART')
+    conf['NTLM_AUTH']['NTLM_TO_BASIC'] = makeInt(conf['NTLM_AUTH']['NTLM_TO_BASIC'], 'NTLM_TO_BASIC')
+    if not conf['NTLM_AUTH']['NT_DOMAIN']:
+        print "ERROR: NT DOMAIN must be set."
         sys.exit(1)
 
 
     #-----------------------------------------------
     # DEBUG
-    try:
-        conf['DEBUG']['DEBUG'] = int(conf['DEBUG']['DEBUG'])
-        conf['DEBUG']['AUTH_DEBUG'] = int(conf['DEBUG']['AUTH_DEBUG'])
-        conf['DEBUG']['BIN_DEBUG'] = int(conf['DEBUG']['BIN_DEBUG'])
-    except:
-        print "ERROR: There is a problem with [DEBUG] section in the config."
-        print "Exit."
-        sys.exit(1)
+    conf['DEBUG']['DEBUG'] = makeInt(conf['DEBUG']['DEBUG'], 'DEBUG')
+    conf['DEBUG']['AUTH_DEBUG'] = makeInt(conf['DEBUG']['AUTH_DEBUG'], 'AUTH_DEBUG')
+    conf['DEBUG']['BIN_DEBUG'] = makeInt(conf['DEBUG']['BIN_DEBUG'], 'BIN_DEBUG')
 
     # screen activity
     if conf['DEBUG'].has_key('SCR_DEBUG'):
@@ -110,3 +84,10 @@ def arrange(conf):
 
     return conf
 
+def makeInt(string, errorDesc='an item'):
+    try:
+        ret = int(string)
+    except ValueError:
+        print "ERROR: There is a problem with "+errorDesc+" in the config (is it not a number?)"
+        sys.exit(1)
+    return ret
