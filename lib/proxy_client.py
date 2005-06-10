@@ -105,7 +105,7 @@ class proxy_HTTP_Client:
                 if not self.rserver_socket_closed:
                     try:
                         select.select([self.rserver_socket.fileno(), self.client_socket.fileno()], [], [], 5.0)
-                    except socket.error:
+                    except (socket.error, select.error):
                         thread.exit()
                 else:
                     # if there is no connection to remote server

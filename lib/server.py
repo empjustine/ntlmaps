@@ -22,7 +22,6 @@ import proxy_client, www_client, monitor_upstream, ntlm_procs
 
 #--------------------------------------------------------------
 class AuthProxyServer:
-    pass
 
     #--------------------------------------------------------------
     def __init__(self, config):
@@ -60,7 +59,7 @@ class AuthProxyServer:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.bind((self.MyHost, self.ListenPort))
         except socket.error:
-            print "ERROR: Could not create socket. Possibly it is being used by another process."
+            print "ERROR: Could not create socket. Possibly port %s is still being used by another process." % self.config['GENERAL']['LISTEN_PORT']
             sys.exit(1)
         print 'Now listening at %s on port %s' % (self.config['GENERAL']['HOST'], self.config['GENERAL']['LISTEN_PORT'])
         while(1):

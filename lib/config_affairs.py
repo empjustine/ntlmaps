@@ -34,7 +34,6 @@ def arrange(conf):
         conf['GENERAL']['PARENT_PROXY'] = conf['GENERAL']['AVAILABLE_PROXY_LIST'].pop()
         conf['GENERAL']['PARENT_PROXY_PORT'] = makeInt(conf['GENERAL']['PARENT_PROXY_PORT'], 'PARENT_PROXY_PORT')
         conf['GENERAL']['PARENT_PROXY_TIMEOUT'] = makeInt(conf['GENERAL']['PARENT_PROXY_TIMEOUT'], 'PARENT_PROXY_TIMEOUT')
-        conf['GENERAL']['LISTEN_PORT'] = makeInt(conf['GENERAL']['LISTEN_PORT'], 'LISTEN_PORT')
     try:
         conf['GENERAL']['MAX_CONNECTION_BACKLOG'] = int(conf['GENERAL']['MAX_CONNECTION_BACKLOG'])
     except ValueError:
@@ -43,11 +42,18 @@ def arrange(conf):
         else:
             print "ERROR: There is a problem with 'MAX_CONNECTION_BACKLOG' in the config (neither a number nor 'SOMAXCONN'?)"
             sys.exit(1)
-
-    conf['GENERAL']['HOST'] = socket.gethostname()
-    conf['GENERAL']['HOST_IP_LIST'] = socket.gethostbyname_ex(socket.gethostname())[2] + ['127.0.0.1']
+    conf['GENERAL']['LISTEN_PORT'] = makeInt(conf['GENERAL']['LISTEN_PORT'], 'LISTEN_PORT')
 
     conf['GENERAL']['ALLOW_EXTERNAL_CLIENTS'] = makeInt(conf['GENERAL']['ALLOW_EXTERNAL_CLIENTS'], 'ALLOW_EXTERNAL_CLIENTS')
+    hostname = socket.gethostname()
+    conf['GENERAL']['HOST'] = hostname
+    try:
+        externalIP = socket.gethostbyname_ex(hostname)[2]
+    except socket.gaierror:
+        print "ERROR: Unable to get the IP address of this machine.  This is not a fatal problem, but may cause problems for you using this proxy in some scenarios."
+        externalIP = []
+    conf['GENERAL']['HOST_IP_LIST'] = externalIP + ['127.0.0.1']
+
     conf['GENERAL']['FRIENDLY_IPS'] = conf['GENERAL']['HOST_IP_LIST'] + string.split(conf['GENERAL']['FRIENDLY_IPS'])
 
     conf['GENERAL']['URL_LOG'] = makeInt(conf['GENERAL']['URL_LOG'], 'URL_LOG')
