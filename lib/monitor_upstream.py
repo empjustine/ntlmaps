@@ -38,6 +38,35 @@ class monitorThread:
             thread.start_new_thread(self.alarmThread.run, ())
             # We poll the current proxy for responsiveness...           
             # TODO: add logger entries for all these exceptions
+            self.httpTest()
+            self.alarmThread.alive = 0
+            time.sleep(self.timeoutSeconds+1)
+            # Maximum timeout before hitting bottom of this loop is therefore
+            # at most self.timeoutSeconds*2+1 and at least self.timeoutSeconds+1.
+            # Hopefully this is a reasonable tradeoff between noticeable
+            # service outage for user and creaming the proxy with stacks of
+            # our spurious requests... :)
+
+    def die(self):
+        try:
+            self.alarmThread.alive = 0
+        except AttributeError:
+            pass # self.alarmThread is already dead
+        self.alive = 0
+        die_func = signal.getsignal(self.die_sig)
+        die_func(self.die_sig)
+            
+    def httpTest(self):
+        """
+        Although the httplib.HTTP class is retained in Python 2.x for backwards
+        compatability with Python 1.5 it is not recommended for new code, and as
+        most users will now be using the Python 2.x stream I have abstracted away
+        two code paths in here.  The maintenance will be slightly higher, but in
+        the long term it will make it easier to fork off a Python 1.5.2 maintenance
+        version of ntlmaps and just keep the pure Python 2.x optimised version.
+        """
+        if 'HTTPConnection' in dir(httplib):
+            # Python 2.x
             try:
                 conn = httplib.HTTPConnection(self.config['GENERAL']['PARENT_PROXY'], self.config['GENERAL']['PARENT_PROXY_PORT'])
                 try:
@@ -56,23 +85,32 @@ class monitorThread:
                     self.die()
             except socket.gaierror:    # Name resolution error for this proxy?
                 self.die()
-            self.alarmThread.alive = 0
-            time.sleep(self.timeoutSeconds+1)
-            # Maximum timeout before hitting bottom of this loop is therefore
-            # at most self.timeoutSeconds*2+1 and at least self.timeoutSeconds+1.
-            # Hopefully this is a reasonable tradeoff between noticeable
-            # service outage for user and creaming the proxy with stacks of
-            # our spurious requests... :)
+        else:
+            # Python 1.5.2
+            try:
+                # This call fails far more regularly than it should.  Best to move to
+                # using Python 2.x
+                conn = httplib.HTTP(self.config['GENERAL']['PARENT_PROXY'], self.config['GENERAL']['PARENT_PROXY_PORT'])
+                try:
+                    conn.putrequest('GET', '/')
+                    conn.endheaders()
+                    try:
+                        errcode, errmsg, headers = conn.getreply()
+                        try:
+                            data = conn.getfile()
+                            if not data.read():
+                                self.die()
+                            data.close()
+                        except:
+                            self.die()
+                    except:
+                        self.die()
+                except:
+                    self.die()
+            except:
+                self.die()
+        return
 
-    def die(self):
-        try:
-            self.alarmThread.alive = 0
-        except AttributeError:
-            pass # self.alarmThread is already dead
-        self.alive = 0
-        die_func = signal.getsignal(self.die_sig)
-        die_func(self.die_sig)
-            
 #--------------------------------------------------------------
 class timerThread:
     """

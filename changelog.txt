@@ -1,6 +1,11 @@
+Version 0.9.8.11 Friday 14th January 2005 Darryl Dixon <esrever_otua@users.sourceforge.net>
+- Fixed use of split() function that broke Python 1.5.2 compatibility in config_affairs.py
+- Added traps for ValueError in proxy_client.py for Python 1.5.2 compatibility
+- Split testing of upstream proxy codepath in monitor_upstream.py into Python 2.x and 1.5.2 branches
+
 Version 0.9.8.10 Friday 24th December Darryl Dixon <esrever_otua@users.sourceforge.net>
 - Caught another exception condition for failed upstream proxy in monitor_upstream.py
-- Reworked program flow in monitor_upstream.py and server.py to fix 100% cpu bug introduced in  0.9.8.9
+- Reworked program flow in monitor_upstream.py and server.py to fix 100% cpu bug introduced in 0.9.8.9
 
 Version 0.9.8.9 Thursday 2nd December Darryl Dixon <esrever_otua@users.sourceforge.net>
 - Change default values for PARENT_PROXY_PORT to 8080 and PARENT_PROXY_TIMEOUT to 15 in server.cfg
