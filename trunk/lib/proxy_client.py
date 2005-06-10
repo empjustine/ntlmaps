@@ -188,7 +188,7 @@ class proxy_HTTP_Client:
         try:
             res = select.select([self.rserver_socket.fileno()], [], [], 0.0)
         except socket.error:
-            # TODO: add logger entry for this event
+            self.logger.log('*** Exception in select() on server socket.\n')
             thread.exit()
         if res[0]:
             try:
@@ -253,7 +253,6 @@ class proxy_HTTP_Client:
         self.client_buffer = self.client_buffer + socket_data
 
         if not self.client_head_obj and not self.tunnel_mode:
-            # TODO: debug self.client_head_obj
             self.client_head_obj, rest = http_header.extract_client_header(self.client_buffer)
 
             if self.client_head_obj:
@@ -425,10 +424,9 @@ class proxy_HTTP_Client:
         code = self.rserver_head_obj.get_http_code()
         try:
             c_method = self.client_head_obj.get_http_method()
-        except:
-            #TODO: add a logging entry for this event (problem with
-            #      remote end of connection) and find exactly which
-            #      exception is being thrown and trap only it...
+        except AttributeError:
+            # Problem with remote end of connection
+            self.logger.log('*** Exception getting http code from client_head_obj -- remote end closed connection??\n' % code)
             thread.exit()
 
         if code == '304' or code == '204' or code[0] == '1':

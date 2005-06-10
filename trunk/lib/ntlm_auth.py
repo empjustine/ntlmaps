@@ -108,7 +108,7 @@ class ntlm_auther:
             NTLM_msg3 = ntlm_messages.create_message3(nonce, env)
             connection.logger_auth.log(ntlm_messages.debug_message3(NTLM_msg3))
         else:
-            NTLM = ''
+            NTLM_msg3 = ''
 
         tmp_client_head_obj = connection.client_head_obj.copy()
         tmp_client_head_obj.replace_param_value('Proxy-Authorization', 'NTLM ' + NTLM_msg3)
@@ -300,7 +300,7 @@ class ntlm_auther:
 
         # End of test params
 
-        env['NTLM_TO_BASIC'] = int(connection.config['NTLM_AUTH']['NTLM_TO_BASIC'])
+        env['NTLM_TO_BASIC'] = connection.config['NTLM_AUTH']['NTLM_TO_BASIC']
 
         connection.logger.log('*** Environment has been built successfully.\n')
 
