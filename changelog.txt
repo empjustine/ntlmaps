@@ -1,0 +1,72 @@
+Verison 0.9.8 - Fri May 17 04:07:20 MSD 2002
+- internal redesign
+- config file redesign
+- fixed bug during HTTPS CONNECT authentication.
+- fixed bug with UNICODE string conversion in NTLM msg3 creation code.
+- no need in proxy port when proxy is not used
+- fixed minor bug with an exception that was eraised if there was no http header
+  in server's response.
+- MSN Messenger and clients alike work again. It had been broken since APS 0.9.1
+- minor bug in header remake (Proxy Connection -> Connection)
+- fixed bug when client sends its header slowly and clients thread exits before
+  doing anything useful. This was broken since version 0.9.7
+- new optional value in config file NT_HOSTNAME (see comment in server.cfg).
+- DOMAIN value in config is now NT_DOMAIN, to make it clear what domain name has
+  to be used.
+- implemented NTLM to BASIC translation. (it gives only one try to enter credentials now)
+
+Verison 0.9.7 - Tue Dec 11 10:43:58 MSK 2001
+- added ability to do multiple authentications in persistent connection. It looks like that
+  there is some kind of NTLM extension that requires client to authenticate himself to every
+  new network location even during persistent connection.
+- fixed bug when request is sent to currently connected web server even if it is a request
+  to different network location.
+- 'Negotiate' authentication method name for www-authentication has been changed to 'NTLM'
+  for compatibility with IIS/4.0
+- added '-c' command line option to point to config file different than './server.cfg'
+- AUTH_DEBUG option added. It makes APS write detailed report on NTLM authentication
+  process.
+- Highly experimental NTLM_FLAGS option allows changing NTLM flags in auth messages sent
+  to remote server.
+
+Verison 0.9.5 - Tue Nov 6 03:02:53 MSK 2001
+- UNICODE string support during authorization (DOMAIN, USER, HOST).
+- NT response is calculated now. Actually UNICODE and NT response are part of NTLM, but
+  most of times everything works without them. See FULL_NTLM option in server.cfg
+- some performance improvement (I hope).
+- now it can behave as a standalone proxy server and do NTLM authentication at Web servers as
+  well. While NTLM cannot pass through proxy server this option may be of use in intranet
+  environment with athorization at local webservices. Just leave PARENT_PROXY option blank and
+  it will connect to remote servers itself.
+
+Verison 0.9.1 - Fri May 25 01:51:30 MSD 2001
+- if one side closed connection server tries sending data left in the buffer
+  before closing connection to the other side.
+- new parameter in server.cfg - FRIENDLY_IPS that works
+  in pair with ALLOW_EXTERNAL_CLIENTS:0. See server.cfg
+- a bit improved POST of long files, but not completely perfect.
+
+Verison 0.8.8 - Thu Apr 26 02:27:37 MSD 2001
+- calls of socket.bind() and socket.connect() are compatible with Python >=1.6 now
+- ALLOW_EXTERNAL_CLIENTS parameter in server.cfg to allow/disallow clients from external hosts
+- NT password to use may be entered at the start time from the console (see server.cfg)
+- calmed down debug info sent to console. Now it appears only if DEBUG is set to 1 in server.cfg
+
+Verison 0.8.6 - Tue Apr 17 02:31:18 MSD 2001
+- an ugly junkbuster's header delimiter '\012\012' worked around
+- hopefully fixed bug with leakage of MS Proxy info page into response with requested resource
+- value names are case insensitive now
+
+Verison 0.8.3 - Wed Apr 11 22:46:40 MSD 2001
+- POST and PUT should work with NTLM
+- possibly there is a bug in proxy response header extracting routine
+
+Verison 0.8.2 - Sun Apr  8 02:16:41 MSD 2001
+- Tunnel mode for HTTPS 'CONNECT' request
+- POST and PUT should work without authorization
+- fixed some bugs
+- POST does not work with NTLM authorization (working on this)
+
+Version 0.8.0 - Thu Mar 29 03:12:41 MSD 2001
+- First public release.
+
