@@ -782,16 +782,17 @@ class proxy_HTTP_Client:
     #-----------------------------------------------------------------------
     def determine_mode(self):
         if self.config['GENERAL']['PARENT_PROXY']:
-            if self.config['GENERAL']['HOSTS_TO_BYPASS_PARENT_PROXY']:
+            if self.config['GENERAL']['HOSTS_TO_BYPASS_PARENT_PROXY'] or self.config['GENERAL']['DIRECT_CONNECT_IF_POSSIBLE']:
                 try:
-                    host = self.client_head_obj.get_param_values('Host')
-                    if host:
-                        if host[0] in self.config['GENERAL']['HOSTS_TO_BYPASS_PARENT_PROXY']:
-                            self.move_to_www_mode()
-                        else:
-                            self.move_to_proxy_mode()
+                    if self.config['GENERAL']['PARENT_SKIP_FOR_INTERNAL'] and self.can_connect():
+                        self.move_to_www_mode()
                     else:
-                        self.move_to_proxy_mode()
+                        host = self.client_head_obj.get_param_values('Host')
+                        if host:
+                            if host[0] in self.config['GENERAL']['HOSTS_TO_BYPASS_PARENT_PROXY']:
+                                self.move_to_www_mode()
+                            else:
+                                self.move_to_proxy_mode()
                 except KeyError:
                     self.move_to_proxy_mode()
             else:
@@ -799,6 +800,17 @@ class proxy_HTTP_Client:
         else:
             self.move_to_www_mode()
         return
+
+    #-----------------------------------------------------------------------
+    def can_connect(self):
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            rs, rsp = self.client_head_obj.get_http_server()
+            s.connect((rs, rsp))
+            s.close()
+            return True
+        except:
+            return False
 
     #-----------------------------------------------------------------------
     def move_to_proxy_mode(self):
@@ -810,6 +822,7 @@ class proxy_HTTP_Client:
             self.parent_lock_list.append(self)
             self.parent_lock.release()
         return
+
     #-----------------------------------------------------------------------
     def move_to_www_mode(self):
         self.connect_rserver = self.www_connect_rserver
