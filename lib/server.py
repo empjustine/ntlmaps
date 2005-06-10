@@ -35,8 +35,8 @@ class AuthProxyServer:
     def run(self):
         ""
         self.monitor = monitor_upstream.monitorThread(self.config)
+        signal.signal(signal.SIGINT, self.sigHandler)
         thread.start_new_thread(self.monitor.run, ())
-        signal.signal(signal.SIGINT, self.monitor.sigHandler)
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.bind((self.MyHost, self.ListenPort))
@@ -58,7 +58,6 @@ class AuthProxyServer:
                         conn.close()
             except socket.error:
                 pass
-                #print "Trapped socket.error in Main"
         s.close()
 
     #--------------------------------------------------------------
@@ -72,3 +71,23 @@ class AuthProxyServer:
             c = www_client.www_HTTP_Client(conn, addr, self.config)
         self.monitor.threadsToKill.append(c)
         thread.start_new_thread(c.run, ())
+
+    #--------------------------------------------------------------
+    def sigHandler(self, signum=None, frame=None):
+        if signum == signal.SIGINT:
+            if self.config['GENERAL']['PARENT_PROXY']:
+                self.monitor.alive = 0
+                self.config['GENERAL']['AVAILABLE_PROXY_LIST'].insert(0, self.config['GENERAL']['PARENT_PROXY'])
+                self.config['GENERAL']['PARENT_PROXY'] = self.config['GENERAL']['AVAILABLE_PROXY_LIST'].pop()
+                map(lambda x: x.exit(), self.monitor.threadsToKill)
+                print "Moving to proxy server: "+self.config['GENERAL']['PARENT_PROXY']
+                self.monitor = monitor_upstream.monitorThread(self.config)
+                thread.start_new_thread(self.monitor.run, ())
+            else:
+                # SIGINT is only special if we are in upstream mode:
+                print 'Got SIGINT, exiting now...'
+                sys.exit(1)
+        else:
+            print 'Got SIGNAL '+str(signum)+', exiting now...'
+            sys.exit(1)
+        return
