@@ -1,3 +1,16 @@
+Version 0.9.8.9 Thursday 2nd December Darryl Dixon <esrever_otua@users.sourceforge.net>
+- Change default values for PARENT_PROXY_PORT to 8080 and PARENT_PROXY_TIMEOUT to 15 in server.cfg
+- Squashed a bug in config_affairs.py that broke LISTEN_PORT when no PARENT_PROXY specified 
+- Caught another exception condition in proxy_client.py
+- Clarified 'Could not create socket' error in server.py to reference port number
+- Added clause in monitor_upstream.py to prevent automatic failover in the case of single upstream proxy
+- Removed redundant 'pass' statement from server.py
+- Caught another exception condition for failed upstream proxy in monitor_upstream.py
+- BUGFIX sourceforge ID#1070604: Added exception handler for call to socket.gethostbyname_ex() in config_affairs.py
+- Moved copyright banner to appear earlier in initialisation
+- Added TODO to monitor_upstream.py
+- BUGFIX sourceforge ID#1070605: Added exception handler for call to open() in http_header.py
+
 Version 0.9.8.8 Tuesday 16th November 2004 Darryl Dixon <esrever_otua@users.sourceforge.net>
 - Squashed bug introduced in 0.9.8.7 with bad logger entry in proxy_client.py
 - Cleaned up handling of 'PASSWORD' config item in config_affairs.py to squash potential bug

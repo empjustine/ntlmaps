@@ -174,11 +174,16 @@ class HTTP_HEAD:
     #-------------------------------
     def debug(self, message):
         ""
-        f = open(http_debug_file_name ,'a')
-        f.write(message)
-        f.write('\n=====\n')
-        f.write(self.head_source)
-        f.close()
+        try:
+            f = open(http_debug_file_name, 'a')
+            f.write(message)
+            f.write('\n=====\n')
+            f.write(self.head_source)
+            f.close()
+        except IOError:
+            pass
+            # Yes, yes, I know, this is just sweeping it under the rug...
+            # TODO: implement a persistent filehandle for logging debug messages to.
 
     #-------------------------------
     def copy(self):

@@ -33,18 +33,22 @@ class monitorThread:
             
     #--------------------------------------------------------------
     def run(self):
-        if self.config['GENERAL']['PARENT_PROXY']:
+        if self.config['GENERAL']['PARENT_PROXY'] and self.config['GENERAL']['AVAILABLE_PROXY_LIST']:
             while self.alive:
                 self.alarmThread = timerThread(self.timeoutSeconds, self.alive, self.die_sig)
                 thread.start_new_thread(self.alarmThread.run, ())
                 # We poll the current proxy for responsiveness...           
+                # TODO: add logger entries for all these exceptions
                 try:
                     conn = httplib.HTTPConnection(self.config['GENERAL']['PARENT_PROXY'], self.config['GENERAL']['PARENT_PROXY_PORT'])
                     try:
                         conn.request("GET", "/")
                         try:
                             data = conn.getresponse()
-                            if not data.read():    # Got a b0rked response?
+                            try:
+                                if not data.read():    # Got a b0rked response?
+                                    self.die()
+                            except AssertionError: # Yup, got a wacky response
                                 self.die()
                             conn.close()
                         except AttributeError:    # Didn't somehow connect?

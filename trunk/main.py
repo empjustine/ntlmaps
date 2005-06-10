@@ -30,13 +30,14 @@ import server, config, config_affairs
 # look for default config name in lib/config.py
 conf = config.read_config(config.findConfigFileNameInArgv(sys.argv, __init__.ntlmaps_dir+'/'))
 
-conf['GENERAL']['VERSION'] = '0.9.8.8'
+conf['GENERAL']['VERSION'] = '0.9.8.9'
+
+#--------------------------------------------------------------
+print 'NTLM authorization Proxy Server v%s' % conf['GENERAL']['VERSION']
+print 'Copyright (C) 2001-2004 by Dmitry Rozmanov and others.'
 
 config = config_affairs.arrange(conf)
 
-#--------------------------------------------------------------
-print 'NTLM authorization Proxy Server v%s' % config['GENERAL']['VERSION']
-print 'Copyright (C) 2001-2004 by Dmitry Rozmanov and others.'
 
 #--------------------------------------------------------------
 # let's run it
