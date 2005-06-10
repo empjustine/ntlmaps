@@ -1,3 +1,11 @@
+Version 0.9.9.2 Wednesday 23rd February 2005 Darryl Dixon <esrever_otua@users.sourceforge.net>
+- Added support for hostnames to FRIENDLY_IPS in server.cfg and config_affairs.py
+- Include some preliminary (alpha) packaging stuff
+- REQUEST sourceforge ID#1143827: Changed logic in config.py to make # work in passwords
+- Add fix for Python 1.5.2 compatability to exception clause in config_affairs.py
+- Fix Host check in self.determinemode() in proxy_client.py
+- Fix self.monitor with no threadsToKill attribute in server.py
+
 Version 0.9.9.1 Monday 14th February 2005 Darryl Dixon <esrever_otua@users.sourceforge.net>
 - Added HOSTS_TO_BYPASS_PARENT_PROXY configuration item in server.cfg
 - Added processing of HOSTS_TO_BYPASS_PARENT_PROXY to config_affairs.py

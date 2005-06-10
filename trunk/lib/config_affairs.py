@@ -22,7 +22,6 @@ import logger
 
 #-------------------------------------------------------------------------
 def arrange(conf):
-    ""
 
     #-----------------------------------------------
     # GENERAL
@@ -50,13 +49,23 @@ def arrange(conf):
     conf['GENERAL']['HOST'] = hostname
     try:
         externalIP = socket.gethostbyname_ex(hostname)[2]
-    except socket.gaierror:
+    except (socket.error): #socket.gaierror in Python 2.x
         print "ERROR: Unable to get the IP address of this machine.  This is not a fatal problem, but may cause problems for you using this proxy in some scenarios."
         externalIP = []
     conf['GENERAL']['HOST_IP_LIST'] = externalIP + ['127.0.0.1']
 
     conf['GENERAL']['FRIENDLY_IPS'] = conf['GENERAL']['HOST_IP_LIST'] + string.split(conf['GENERAL']['FRIENDLY_IPS'])
 
+    # Idea contributed by Fernando M. Garcia Garcia:
+    saneList = []
+    for host in conf['GENERAL']['FRIENDLY_IPS']:
+        try:
+            saneList.append(socket.gethostbyname(host))    
+        except (socket.error): #socket.gaierror on Python 2.x
+            print "ERROR: Could not get IP address for %s in list of FRIENDLY_IPS" % host
+            sys.exit(1)
+    conf['GENERAL']['FRIENDLY_IPS'] = saneList
+            
     conf['GENERAL']['URL_LOG'] = makeInt(conf['GENERAL']['URL_LOG'], 'URL_LOG')
     url_logger = logger.Logger('url.log', conf['GENERAL']['URL_LOG'])
     url_logger_lock = thread.allocate_lock()
