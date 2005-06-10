@@ -67,7 +67,7 @@ Section "MainSection" SEC01
 SectionEnd
 
 Section -AdditionalIcons
-  CreateShortCut "$SMPROGRAMS\InstrumentationXSqlTunnel\Uninstall.lnk" "$INSTDIR\uninst.exe"
+  CreateShortCut "$SMPROGRAMS\Uninstall ${PRODUCT_NAME}.lnk" "$INSTDIR\uninst.exe"
 SectionEnd
 
 Section -Post
@@ -105,7 +105,7 @@ Section Uninstall
   Delete "$INSTDIR\bz2.pyd"
   Delete "$INSTDIR\${PRODUCT_NAME}.cmd"
 
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk"
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall ${PRODUCT_NAME}.lnk"
   Delete "$DESKTOP\${PRODUCT_NAME}.lnk"
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk"
   RMDir "$SMPROGRAMS\${PRODUCT_NAME}"
