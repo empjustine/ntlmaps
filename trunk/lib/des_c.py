@@ -19,7 +19,7 @@
 
 from U32 import U32
 
-# Что бы это значило?
+# --NON ASCII COMMENT ELIDED--
 #typedef unsigned char des_cblock[8];
 #define HDRSIZE 4
 
