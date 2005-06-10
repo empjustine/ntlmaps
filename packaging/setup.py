@@ -24,10 +24,21 @@
 from distutils.core import setup
 import py2exe
 import sys
+import re
 sys.argv.append("py2exe")
 
+# Hmmmmmm.
+repline = re.compile("(?P<before>^conf.*?)__init__.*?(?P<after>\)\)$)", re.M|re.S)
+fileh = open('main.py', 'r')
+code = fileh.read()
+fileh.close()
+newcode = re.sub(repline, re.search(repline, code).group('before')+"'./'"+re.search(repline, code).group('after'), code)
+fileh = open('main.py', 'w')
+fileh.write(newcode)
+fileh.close()
+
 setup(name='ntlmaps',
-    version='0.9.9.3',
+    version='0.9.9.4',
     console=["main.py"],
     package_dir = {'': 'lib'},
     options = {"py2exe": {"packages": ["encodings"]}},

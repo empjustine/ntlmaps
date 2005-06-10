@@ -3,7 +3,7 @@
 # This program may be freely redistributed under the terms of the GNU GPL
 
 %define name ntlmaps
-%define ver 0.9.9.3
+%define ver 0.9.9.4
 %define rel 1
 
 Summary: NTLMAPS is a proxy server that authenticates requests to Microsoft proxies that require NTLM authentication.
@@ -17,6 +17,8 @@ Vendor: Dmitry Rozmanov, Darryl Dixon, and others
 Source: http://prdownloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 Packager: Darryl Dixon <esrever_otua@pythonhacker.is-a-geek.net>
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
+BuildRequires: python >= 1.5.2 perl
+Requires: python >= 1.5.2
 
 %description
 NTLM Authorization Proxy Server (ntlmaps) is a proxy software that allows

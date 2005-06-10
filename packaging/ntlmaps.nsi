@@ -20,7 +20,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "ntlmaps"
-!define PRODUCT_VERSION "0.9.9.3"
+!define PRODUCT_VERSION "0.9.9.4"
 !define PRODUCT_PUBLISHER "MZ"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
@@ -35,7 +35,7 @@ Icon "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
 UninstallIcon "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 DirText "Setup will install $(^Name) in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder."
 LicenseText "If you accept all the terms of the agreement, choose I Agree to continue. You must accept the agreement to install $(^Name)."
-LicenseData "COPYING"
+LicenseData "..\COPYING"
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -53,17 +53,17 @@ Section "MainSection" SEC01
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk" "$INSTDIR\${PRODUCT_NAME}.cmd"
   CreateShortCut "$DESKTOP\${PRODUCT_NAME}.lnk" "$INSTDIR\${PRODUCT_NAME}.cmd"
   
-  File "dist\bz2.pyd"
-  File "dist\library.zip"
-  File /oname="${PRODUCT_NAME}.exe" "dist\main.exe" 
-  File "dist\python24.dll"
-  File "dist\select.pyd"
-  File "dist\server.cfg"
-  File "dist\unicodedata.pyd"
-  File "dist\w9xpopen.exe"
-  File "dist\zlib.pyd"
-  File "dist\_socket.pyd"
-  File "dist\_ssl.pyd"
+  File "..\dist\bz2.pyd"
+  File "..\dist\library.zip"
+  File /oname="${PRODUCT_NAME}.exe" "..\dist\main.exe" 
+  File "..\dist\python24.dll"
+  File "..\dist\select.pyd"
+  File "..\dist\server.cfg"
+  File "..\dist\unicodedata.pyd"
+  File "..\dist\w9xpopen.exe"
+  File "..\dist\zlib.pyd"
+  File "..\dist\_socket.pyd"
+  File "..\dist\_ssl.pyd"
 SectionEnd
 
 Section -AdditionalIcons
