@@ -110,7 +110,10 @@ class proxy_HTTP_Client:
                         thread.exit()
                 else:
                     # if there is no connection to remote server
-                    select.select([self.client_socket.fileno()], [], [], 5.0)
+                    try:
+                        select.select([self.client_socket.fileno()], [], [], 5.0)
+                    except socket.error:
+                        thread.exit()
 
             # client part
             self.run_client_loop()
@@ -230,7 +233,7 @@ class proxy_HTTP_Client:
         ""
         try:
             res = select.select([self.client_socket.fileno()], [], [], 0.0)
-        except socket.error:
+        except socket.error, select.error:
             thread.exit()
         if res[0]:
             try:

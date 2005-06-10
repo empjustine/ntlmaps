@@ -18,23 +18,23 @@
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 #
 
-import signal, httplib, time, sys, socket
+import signal, httplib, time, socket, thread, os
 
 #--------------------------------------------------------------
 class monitorThread:
 
     #--------------------------------------------------------------
     def __init__(self, config):
+        self.alive = 1
         self.config = config
-        signal.signal(signal.SIGINT, self.sigHandler)
-        signal.signal(signal.SIGALRM, self.sigHandler)
         self.threadsToKill = []
             
     #--------------------------------------------------------------
     def run(self):
         if self.config['GENERAL']['PARENT_PROXY']:
-            while 1:
-                signal.alarm(3)
+            while self.alive:
+                self.alarmThread = timerThread(3, self)
+                thread.start_new_thread(self.alarmThread.run, ())
                 # We poll the current proxy for responsiveness...           
                 try:
                     conn = httplib.HTTPConnection(self.config['GENERAL']['PARENT_PROXY'], self.config['GENERAL']['PARENT_PROXY_PORT'])
@@ -43,15 +43,15 @@ class monitorThread:
                         try:
                             data = conn.getresponse()
                             if not data.read():    # Got a b0rked response?
-                                self.sigHandler(signal.SIGINT)
+                                self.die()
                             conn.close()
                         except AttributeError:    # Didn't somehow connect?
-                            self.sigHandler(signal.SIGINT)
+                            self.die()
                     except socket.error:    # Service not running/listening on specified port?
-                        self.sigHandler(signal.SIGINT)
+                        self.die()
                 except socket.gaierror:    # Name resolution error for this proxy?
-                    self.sigHandler(signal.SIGINT)
-                signal.alarm(0)
+                    self.die()
+                self.alarmThread.alive = 0
                 time.sleep(2)
                 # Maximum timeout before hitting bottom of this loop is therefore
                 # at most ~5 seconds and at least >2 seconds.
@@ -59,31 +59,34 @@ class monitorThread:
                 # service outage for user and creaming the proxy with stacks of
                 # our spurious requests... :)
         else:
-            while 1:
+            while self.alive:
                 pass #'Gracefully' spin without returning from function
+        thread.exit()
+
+    def die(self, die_sig=signal.SIGINT):
+        self.alive = 0
+        self.alarmThread.alive = 0
+        os.kill(os.getpid(), die_sig)
+        thread.exit()
             
+#--------------------------------------------------------------
+class timerThread:
+    """
+    Used in place of SIGALRM as Windows doesn't support it.
+    """
+
     #--------------------------------------------------------------
-    def sigHandler(self, signum=None, frame=None):
-        if signum == signal.SIGINT:
-            if self.config['GENERAL']['PARENT_PROXY']:
-                #print "Got SIGINT, changing server now..."
-                self.config['GENERAL']['AVAILABLE_PROXY_LIST'].insert(0, self.config['GENERAL']['PARENT_PROXY'])
-                self.config['GENERAL']['PARENT_PROXY'] = self.config['GENERAL']['AVAILABLE_PROXY_LIST'].pop()
-                print "Moving to proxy server: "+self.config['GENERAL']['PARENT_PROXY']
-                # Done this way to avoid races without having to resort to
-                # locking, as new connections are coming in all the time...
-                for i in range(len(self.threadsToKill)):
-                    self.threadsToKill[0].exit()
-                    self.threadsToKill.remove(self.threadsToKill[0])
-            else:
-                # SIGINT is only special if we are in upstream mode:
-                print 'Got '+signum+', exiting now...'
-                sys.exit(1)
-        elif signum == signal.SIGALRM:
-            # Timeout on proxy responses
-            #print "Timed out with ALRM"
-            self.sigHandler(signal.SIGINT)
-        else:
-            print 'Got '+signum+', exiting now...'
-            sys.exit(1)
-        return
+    def __init__(self, seconds, caller):
+        self.alive = 1
+        self.timed_out = 0
+        self.seconds = seconds
+        self.caller = caller
+
+    #--------------------------------------------------------------
+    def run(self):
+        time.sleep(self.seconds)
+        if self.alive and self.caller.alive:
+            self.timed_out = 1
+            #print "Timer expired"
+            os.kill(os.getpid(), signal.SIGINT)
+        thread.exit()
