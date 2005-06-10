@@ -30,11 +30,13 @@ class AuthProxyServer:
         self.config = config
         self.MyHost = ''
         self.ListenPort = self.config['GENERAL']['LISTEN_PORT']
+        self.sigLock = thread.allocate_lock() # For locking in the sigHandler
+        self.monLock = thread.allocate_lock() # For keeping the monitor thread sane
 
     #--------------------------------------------------------------
     def run(self):
         ""
-        self.monitor = monitor_upstream.monitorThread(self.config)
+        self.monitor = monitor_upstream.monitorThread(self.config, signal.SIGINT)
         signal.signal(signal.SIGINT, self.sigHandler)
         thread.start_new_thread(self.monitor.run, ())
         try:
@@ -63,6 +65,10 @@ class AuthProxyServer:
     #--------------------------------------------------------------
     def client_run(self, conn, addr):
         ""
+        # Locking here is really more of a 'nice to have';
+        # if performance suffers on heavy load we can trade
+        # drops here for drops on bad proxy later.
+        self.monLock.acquire()
         if self.config['GENERAL']['PARENT_PROXY']:
             # working with MS Proxy
             c = proxy_client.proxy_HTTP_Client(conn, addr, self.config)
@@ -70,19 +76,26 @@ class AuthProxyServer:
             # working with MS IIS and any other
             c = www_client.www_HTTP_Client(conn, addr, self.config)
         self.monitor.threadsToKill.append(c)
+        self.monLock.release()
         thread.start_new_thread(c.run, ())
 
     #--------------------------------------------------------------
     def sigHandler(self, signum=None, frame=None):
         if signum == signal.SIGINT:
             if self.config['GENERAL']['PARENT_PROXY']:
-                self.monitor.alive = 0
-                self.config['GENERAL']['AVAILABLE_PROXY_LIST'].insert(0, self.config['GENERAL']['PARENT_PROXY'])
-                self.config['GENERAL']['PARENT_PROXY'] = self.config['GENERAL']['AVAILABLE_PROXY_LIST'].pop()
-                map(lambda x: x.exit(), self.monitor.threadsToKill)
-                print "Moving to proxy server: "+self.config['GENERAL']['PARENT_PROXY']
-                self.monitor = monitor_upstream.monitorThread(self.config)
-                thread.start_new_thread(self.monitor.run, ())
+                if self.sigLock.acquire(0):
+                    old_monitor = self.monitor
+                    self.config['GENERAL']['AVAILABLE_PROXY_LIST'].insert(0, self.config['GENERAL']['PARENT_PROXY'])
+                    self.monLock.acquire() # Keep locked section as small as possible
+                    self.config['GENERAL']['PARENT_PROXY'] = self.config['GENERAL']['AVAILABLE_PROXY_LIST'].pop()
+                    self.monitor = monitor_upstream.monitorThread(self.config, signal.SIGINT)
+                    self.monLock.release()
+                    print "Moving to proxy server: "+self.config['GENERAL']['PARENT_PROXY']
+                    old_monitor.alive = 0
+                    thread.start_new_thread(self.monitor.run, ())
+                    map(lambda x: x.exit(), old_monitor.threadsToKill)
+                    old_monitor.die() # Protected from recursion by lock
+                    self.sigLock.release()
             else:
                 # SIGINT is only special if we are in upstream mode:
                 print 'Got SIGINT, exiting now...'

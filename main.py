@@ -31,7 +31,7 @@ import config, ntlm_procs, config_affairs
 # look for default config name in lib/config.py
 conf = config.read_config(config.findConfigFileNameInArgv(sys.argv, __init__.ntlmaps_dir+'/'))
 
-conf['GENERAL']['VERSION'] = '0.9.8.3'
+conf['GENERAL']['VERSION'] = '0.9.8.4'
 
 config = config_affairs.arrange(conf)
 
