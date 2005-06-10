@@ -24,16 +24,18 @@ import signal, httplib, time, socket, thread, os
 class monitorThread:
 
     #--------------------------------------------------------------
-    def __init__(self, config):
+    def __init__(self, config, die_sig=signal.SIGINT):
         self.alive = 1
         self.config = config
+        self.die_sig = die_sig
         self.threadsToKill = []
+        self.timeoutSeconds = 3 # TODO: make this a config item
             
     #--------------------------------------------------------------
     def run(self):
         if self.config['GENERAL']['PARENT_PROXY']:
             while self.alive:
-                self.alarmThread = timerThread(3, self)
+                self.alarmThread = timerThread(self.timeoutSeconds, self.alive, self.die_sig)
                 thread.start_new_thread(self.alarmThread.run, ())
                 # We poll the current proxy for responsiveness...           
                 try:
@@ -52,22 +54,24 @@ class monitorThread:
                 except socket.gaierror:    # Name resolution error for this proxy?
                     self.die()
                 self.alarmThread.alive = 0
-                time.sleep(2)
+                time.sleep(self.timeoutSeconds+1)
                 # Maximum timeout before hitting bottom of this loop is therefore
-                # at most ~5 seconds and at least >2 seconds.
-                # Hopefully this is a reasonable timeout to tradeoff between noticeable
+                # at most self.timeoutSeconds*2+1 and at least self.timeoutSeconds.
+                # Hopefully this is a reasonable tradeoff between noticeable
                 # service outage for user and creaming the proxy with stacks of
                 # our spurious requests... :)
         else:
             while self.alive:
                 pass #'Gracefully' spin without returning from function
-        thread.exit()
 
-    def die(self, die_sig=signal.SIGINT):
+    def die(self):
+        try:
+            self.alarmThread.alive = 0
+        except AttributeError:
+            pass # self.alarmThread is already dead
         self.alive = 0
-        self.alarmThread.alive = 0
-        os.kill(os.getpid(), die_sig)
-        thread.exit()
+        die_func = signal.getsignal(self.die_sig)
+        die_func(self.die_sig)
             
 #--------------------------------------------------------------
 class timerThread:
@@ -76,17 +80,15 @@ class timerThread:
     """
 
     #--------------------------------------------------------------
-    def __init__(self, seconds, caller):
-        self.alive = 1
-        self.timed_out = 0
+    def __init__(self, seconds, parentAlive, die_sig=signal.SIGINT):
         self.seconds = seconds
-        self.caller = caller
+        self.parentAlive = parentAlive
+        self.die_sig = die_sig
+        self.alive = 1
 
     #--------------------------------------------------------------
     def run(self):
         time.sleep(self.seconds)
-        if self.alive and self.caller.alive:
-            self.timed_out = 1
-            #print "Timer expired"
-            os.kill(os.getpid(), signal.SIGINT)
-        thread.exit()
+        if self.alive and self.parentAlive:
+            die_func = signal.getsignal(self.die_sig)
+            die_func(self.die_sig)

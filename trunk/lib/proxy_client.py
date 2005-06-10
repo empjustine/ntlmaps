@@ -233,7 +233,7 @@ class proxy_HTTP_Client:
         ""
         try:
             res = select.select([self.client_socket.fileno()], [], [], 0.0)
-        except socket.error, select.error:
+        except (socket.error, select.error):
             thread.exit()
         if res[0]:
             try:
