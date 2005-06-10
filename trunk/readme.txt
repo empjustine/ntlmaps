@@ -1,4 +1,4 @@
-README file for 'NTLM Authorization Proxy Server' v0.9.9.2
+README file for 'NTLM Authorization Proxy Server' v0.9.9.3
 
 Release Purpose:
 ----------------

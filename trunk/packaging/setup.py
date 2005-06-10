@@ -27,7 +27,7 @@ import sys
 sys.argv.append("py2exe")
 
 setup(name='ntlmaps',
-    version='0.9.9.2',
+    version='0.9.9.3',
     console=["main.py"],
     package_dir = {'': 'lib'},
     options = {"py2exe": {"packages": ["encodings"]}},
