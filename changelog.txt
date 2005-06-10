@@ -1,3 +1,10 @@
+Version 0.9.8.5 Wednesday 10th November 2004
+- Added PARENT_PROXY_TIMEOUT configuration item
+- Squashed a typo bug in config_affairs for HOST_IP_LIST
+- Updated Install.txt
+- BUGFIX sourceforge request ID#707725: Fixed 2 instances of error in
+  ntlm_auth
+
 Version 0.9.8.4 Tuesday 9th November 2004
 - Changed method of delivering signal to just call sigHandler() directly
 - Seriously reworked programme flow of monitor thread to accomodate change

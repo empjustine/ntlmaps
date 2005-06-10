@@ -29,7 +29,7 @@ class monitorThread:
         self.config = config
         self.die_sig = die_sig
         self.threadsToKill = []
-        self.timeoutSeconds = 3 # TODO: make this a config item
+        self.timeoutSeconds = self.config['GENERAL']['PARENT_PROXY_TIMEOUT']
             
     #--------------------------------------------------------------
     def run(self):

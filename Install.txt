@@ -12,16 +12,11 @@ INSTALLATION
 
    Unix:
    ---------
-   ./main.py &
+   /path/to/main.py &
 
    or
 
-   python main.py
-
-   NOTE: in Unix you need to add #! /usr/bin/python as a first line
-   to main.py (your path to Python) and change attributes like:
-     $ find . -type f -exec chmod a=rw {} \;
-     $ find . -type d -exec chmod a=rwx {} \;
+   python /path/to/main.py
 
 3. Try it! Go to your browser and set 127.0.0.1 at port 5865 as
    your HTTP/FTP proxy server. 5865 is the default port, if you have not

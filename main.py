@@ -31,7 +31,7 @@ import config, ntlm_procs, config_affairs
 # look for default config name in lib/config.py
 conf = config.read_config(config.findConfigFileNameInArgv(sys.argv, __init__.ntlmaps_dir+'/'))
 
-conf['GENERAL']['VERSION'] = '0.9.8.4'
+conf['GENERAL']['VERSION'] = '0.9.8.5'
 
 config = config_affairs.arrange(conf)
 
@@ -52,7 +52,7 @@ if not conf['NTLM_AUTH']['PASSWORD']:
 
 if not conf['NTLM_AUTH']['PASSWORD']:
     print 'Sorry. PASSWORD is required. Bye.'
-    sys.exit()
+    sys.exit(1)
 
 #--------------------------------------------------------------
 # hashed passwords calculation
