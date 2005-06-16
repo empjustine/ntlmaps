@@ -310,7 +310,7 @@ class proxy_HTTP_Client:
         else:
             self.logger.log("*** No server's data to send to the client. (server's buffer - %d bytes)\n" % len(self.rserver_buffer))
     #-----------------------------------------------------------------------
-    def proxy_send_client_header(self):
+    def send_client_header(self):
         self.logger.log('*** Sending client request header to remote server...')
         ok = self.client_head_obj.send(self.rserver_socket)
         if ok:
@@ -779,7 +779,7 @@ class proxy_HTTP_Client:
         self.logger.log('*** New client header:\n=====\n' + self.client_head_obj.__repr__())
 
     #-----------------------------------------------------------------------
-    def www_send_client_header(self):
+    def send_client_header(self):
         if self.client_head_obj.get_http_method() == 'CONNECT':
             self.client_header_sent = 1
         else:
@@ -839,7 +839,6 @@ class proxy_HTTP_Client:
         self.connect_rserver = self.proxy_connect_rserver
         self.fix_client_header = self.proxy_fix_client_header
         self.check_connected_remote_server = self.proxy_check_connected_remote_server
-        self.send_client_header = self.proxy_send_client_header
         if self.locking_required:
             self.parent_lock.acquire()
             self.parent_lock_list.append(self)
@@ -851,6 +850,5 @@ class proxy_HTTP_Client:
         self.connect_rserver = self.www_connect_rserver
         self.fix_client_header = self.www_fix_client_header
         self.check_connected_remote_server = self.www_check_connected_remote_server
-        self.send_client_header = self.www_send_client_header
         return
 
