@@ -38,7 +38,7 @@ fileh.write(newcode)
 fileh.close()
 
 setup(name='ntlmaps',
-    version='0.9.9.4',
+    version='0.9.9.5',
     console=["main.py"],
     package_dir = {'': 'lib'},
     options = {"py2exe": {"packages": ["encodings"]}},

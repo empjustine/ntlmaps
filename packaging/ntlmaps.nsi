@@ -20,7 +20,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "ntlmaps"
-!define PRODUCT_VERSION "0.9.9.4"
+!define PRODUCT_VERSION "0.9.9.5"
 !define PRODUCT_PUBLISHER "MZ"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
