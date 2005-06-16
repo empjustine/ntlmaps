@@ -3,7 +3,7 @@
 # This program may be freely redistributed under the terms of the GNU GPL
 
 %define name ntlmaps
-%define ver 0.9.9.4
+%define ver 0.9.9.5
 %define rel 1
 
 Summary: NTLMAPS is a proxy server that authenticates requests to Microsoft proxies that require NTLM authentication.

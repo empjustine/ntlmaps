@@ -1,3 +1,7 @@
+Version 0.9.9.5 Thursday 16 June 2005 Darryl Dixon <esrever_otua@users.sourceforge.net>
+- Added socket config option for REUSEADDR in server.py
+- BUGFIX sourceforge ID#1221292 fix regression in CONNECT code that broke SSL
+
 Version 0.9.9.4 Friday 10th June 2005 Darryl Dixon <esrever_otua@users.sourceforge.net>
 - Minor fixups in ntlmaps.spec for better FHS and ntlmaps.nsi for Uninstaller correctness
 - PATCH sourceforge ID#1214559: Add patch for CONNECT support in Direct mode
