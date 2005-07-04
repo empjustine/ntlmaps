@@ -806,7 +806,7 @@ class proxy_HTTP_Client:
         if self.config['GENERAL']['PARENT_PROXY']:
             if self.config['GENERAL']['HOSTS_TO_BYPASS_PARENT_PROXY'] or self.config['GENERAL']['DIRECT_CONNECT_IF_POSSIBLE']:
                 try:
-                    if self.config['GENERAL']['PARENT_SKIP_FOR_INTERNAL'] and self.can_connect():
+                    if self.config['GENERAL']['DIRECT_CONNECT_IF_POSSIBLE'] and self.can_connect():
                         self.move_to_www_mode()
                     else:
                         host = self.client_head_obj.get_param_values('Host')
