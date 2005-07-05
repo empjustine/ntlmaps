@@ -1,3 +1,8 @@
+Version 0.9.9.6 Tuesday 05 July 2005 Darryl Dixon <esrever_otua@users.sourceforge.net>
+- Squash bug introduced in 0.9.9.5 preventing mode change to www in proxy_client.py
+- Mark server.cfg as config file in ntlmaps.spec
+- Update copyright string
+
 Version 0.9.9.5 Thursday 16 June 2005 Darryl Dixon <esrever_otua@users.sourceforge.net>
 - Added socket config option for REUSEADDR in server.py
 - BUGFIX sourceforge ID#1221292 fix regression in CONNECT code that broke SSL

@@ -34,7 +34,7 @@ conf['GENERAL']['VERSION'] = '0.9.9.5'
 
 #--------------------------------------------------------------
 print 'NTLM authorization Proxy Server v%s' % conf['GENERAL']['VERSION']
-print 'Copyright (C) 2001-2004 by Dmitry Rozmanov and others.'
+print 'Copyright (C) 2001-2005 by Dmitry Rozmanov, Darryl Dixon, and others.'
 
 config = config_affairs.arrange(conf)
 
