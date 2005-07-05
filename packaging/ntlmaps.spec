@@ -3,7 +3,7 @@
 # This program may be freely redistributed under the terms of the GNU GPL
 
 %define name ntlmaps
-%define ver 0.9.9.5
+%define ver 0.9.9.6
 %define rel 1
 
 Summary: NTLMAPS is a proxy server that authenticates requests to Microsoft proxies that require NTLM authentication.
@@ -78,6 +78,10 @@ rm -rf %{buildroot}
 %{_sysconfdir}/*
 
 %changelog
+* Tue Jul 05 2005 Darryl Dixon <esrever_otua@pythonhacker.is-a-geek.net>
+  [ntlmaps-0.9.9.6]
+- Mark server.cfg as config file
+
 * Fri Jun 10 2005 Darryl Dixon <esrever_otua@pythonhacker.is-a-geek.net>
   [ntlmaps-0.9.9.4]
 - Move server.cfg to %{_sysconfdir} for better FHS compliance
