@@ -74,7 +74,7 @@ rm -rf %{buildroot}
 #%{_libdir}/*
 %{_bindir}/*
 #%{_mandir}/*
-%config
+%config(noreplace)
 %{_sysconfdir}/*
 
 %changelog
