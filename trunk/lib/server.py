@@ -38,7 +38,7 @@ class AuthProxyServer:
                 print '------------------------'
                 while tries and (not self.config['NTLM_AUTH']['PASSWORD']):
                     tries = tries - 1
-                    if self.config['NTLM_AUTH']['COMPLEX_PASSWORD_SUPPORT']:
+                    if self.config['NTLM_AUTH']['COMPLEX_PASSWORD_INPUT']:
                         try:
                             import nt
                         except ImportError:

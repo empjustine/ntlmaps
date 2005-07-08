@@ -87,6 +87,7 @@ def arrange(conf):
         sys.exit(1)
     if not conf['NTLM_AUTH'].has_key('PASSWORD'):
         conf['NTLM_AUTH']['PASSWORD'] = ''
+        conf['NTLM_AUTH']['COMPLEX_PASSWORD_INPUT'] = makeInt(conf['NTLM_AUTH']['COMPLEX_PASSWORD_INPUT'], 'COMPLEX_PASSWORD_INPUT')
 
 
     #-----------------------------------------------
