@@ -53,6 +53,8 @@ class AuthProxyServer:
                                 getpass = getpass.getpass
                             else:
                                 getpass = win32console.getpass
+                    else:
+                        getpass = getpass.getpass
                     self.config['NTLM_AUTH']['PASSWORD'] = getpass('Your NT password to be used:')
             if not self.config['NTLM_AUTH']['PASSWORD']:
                 print 'Sorry. PASSWORD is required, bye.'
