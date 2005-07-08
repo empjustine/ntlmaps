@@ -38,7 +38,22 @@ class AuthProxyServer:
                 print '------------------------'
                 while tries and (not self.config['NTLM_AUTH']['PASSWORD']):
                     tries = tries - 1
-                    self.config['NTLM_AUTH']['PASSWORD'] = getpass.getpass('Your NT password to be used:')
+                    if self.config['NTLM_AUTH']['COMPLEX_PASSWORD_SUPPORT']:
+                        try:
+                            import nt
+                        except ImportError:
+                            # Nothing to be done
+                            pass
+                        else:
+                            del nt       # Don't we all wish we could do that?
+                            try:
+                                import win32console
+                            except ImportError:
+                                sys.stderr.write('Unable to load win32console support; complex passwords can not be input.\n')
+                                getpass = getpass.getpass
+                            else:
+                                getpass = win32console.getpass
+                    self.config['NTLM_AUTH']['PASSWORD'] = getpass('Your NT password to be used:')
             if not self.config['NTLM_AUTH']['PASSWORD']:
                 print 'Sorry. PASSWORD is required, bye.'
                 sys.exit(1)
