@@ -809,12 +809,17 @@ class proxy_HTTP_Client:
                     if self.config['GENERAL']['DIRECT_CONNECT_IF_POSSIBLE'] and self.can_connect():
                         self.move_to_www_mode()
                     else:
-                        host = self.client_head_obj.get_param_values('Host')
-                        if host:
-                            if host[0] in self.config['GENERAL']['HOSTS_TO_BYPASS_PARENT_PROXY']:
-                                self.move_to_www_mode()
-                            else:
-                                self.move_to_proxy_mode()
+                        rs, rsp = self.client_head_obj.get_http_server()
+                        if rs in self.config['GENERAL']['HOSTS_TO_BYPASS_PARENT_PROXY']:
+                            self.move_to_www_mode()
+                        else:
+                            self.move_to_proxy_mode()
+                        #host = self.client_head_obj.get_param_values('Host')
+                        #if host:
+                        #    if host[0] in self.config['GENERAL']['HOSTS_TO_BYPASS_PARENT_PROXY']:
+                        #        self.move_to_www_mode()
+                        #    else:
+                        #        self.move_to_proxy_mode()
                 except KeyError:
                     self.move_to_proxy_mode()
             else:
