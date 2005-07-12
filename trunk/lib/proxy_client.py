@@ -805,22 +805,12 @@ class proxy_HTTP_Client:
     def determine_mode(self):
         if self.config['GENERAL']['PARENT_PROXY']:
             if self.config['GENERAL']['HOSTS_TO_BYPASS_PARENT_PROXY'] or self.config['GENERAL']['DIRECT_CONNECT_IF_POSSIBLE']:
-                try:
-                    if self.config['GENERAL']['DIRECT_CONNECT_IF_POSSIBLE'] and self.can_connect():
-                        self.move_to_www_mode()
-                    else:
-                        rs, rsp = self.client_head_obj.get_http_server()
-                        if rs in self.config['GENERAL']['HOSTS_TO_BYPASS_PARENT_PROXY']:
-                            self.move_to_www_mode()
-                        else:
-                            self.move_to_proxy_mode()
-                        #host = self.client_head_obj.get_param_values('Host')
-                        #if host:
-                        #    if host[0] in self.config['GENERAL']['HOSTS_TO_BYPASS_PARENT_PROXY']:
-                        #        self.move_to_www_mode()
-                        #    else:
-                        #        self.move_to_proxy_mode()
-                except KeyError:
+                rs, rsp = self.client_head_obj.get_http_server()
+                if rs in self.config['GENERAL']['HOSTS_TO_BYPASS_PARENT_PROXY']:
+                    self.move_to_www_mode()
+                elif self.config['GENERAL']['DIRECT_CONNECT_IF_POSSIBLE'] and self.can_connect(rs, rsp):
+                    self.move_to_www_mode()
+                else:
                     self.move_to_proxy_mode()
             else:
                 self.move_to_proxy_mode()
@@ -829,15 +819,12 @@ class proxy_HTTP_Client:
         return
 
     #-----------------------------------------------------------------------
-    def can_connect(self):
-        try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            rs, rsp = self.client_head_obj.get_http_server()
-            s.connect((rs, rsp))
-            s.close()
-            return True
-        except:
-            return False
+    def can_connect(self, rs, rsp):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # Returns 0 for success, >0 for failure:
+        res = s.connect_ex((rs, rsp))
+        s.close()
+        return not res
 
     #-----------------------------------------------------------------------
     def move_to_proxy_mode(self):
