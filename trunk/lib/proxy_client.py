@@ -38,7 +38,6 @@ class proxy_HTTP_Client:
         # experimental code
         self.basic_auther = basic_auth.basic_auther()
         # experimental code end
-        self.mode_undecided = 1
         self.proxy_authorization_tried = 0
         self.www_authorization_tried = 0
         self.tunnel_mode = 0
