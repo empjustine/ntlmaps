@@ -257,13 +257,13 @@ class proxy_HTTP_Client:
             self.client_head_obj, rest = http_header.extract_client_header(self.client_buffer)
 
             if self.client_head_obj:
-                self.determine_mode()
                 self.logger.log("*** Got client request header.\n")
                 self.client_buffer = rest
                 self.logger.log('*** Client header:\n=====\n' + self.client_head_obj.__repr__())
                 self.guess_client_data_length()
 
                 # mask real values and do transforms
+                self.determine_mode()
                 self.fix_client_header()
 
         self.check_client_data_length()
