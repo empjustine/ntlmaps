@@ -22,7 +22,7 @@
 #
 # setup.py
 from distutils.core import setup
-import py2exe, sys, re, string
+import py2exe, sys, re, string, os
 sys.argv.append("py2exe")
 
 # Hmmmmmm.
@@ -42,36 +42,35 @@ sys.path.append('lib/%s' % _thisdir)
 try:
     import _win32console
 except ImportError:
-    win32console_mod = ''
+    pass
 else:
-    win32console_mod = 'lib/%s/_win32console' % _thisdir
+    os.rename('lib/%s/_win32console.pyd' % _thisdir, 'lib/_win32console.pyd')
 
 setup(name='ntlmaps',
     version='0.9.9.7',
     console=["main.py"],
-    options = {"py2exe": {"packages": ["encodings"],
-                          "optimize": 2}},
     package_dir={'':'lib',
+    options = {"py2exe": {"packages": ["encodings", "_win32console"],
+                          "optimize": 2}},
                  _thisdir:'lib/%s' % _thisdir},
-    py_modules = ['lib/basic_auth',
-        'config',
-        'config_affairs',
-        'des',
-        'des_c',
-        'des_data',
-        'http_header',
-        'logger',
-        'md4',
-        'monitor_upstream',
-        'ntlm_auth',
-        'ntlm_messages',
-        'ntlm_procs',
-        'proxy_client',
-        'server',
-        'U32',
-        'utils',
-        'win32console',
-        '_win32console'],
+    py_modules = ['basic_auth',
+                  'config',
+                  'config_affairs',
+                  'des',
+                  'des_c',
+                  'des_data',
+                  'http_header',
+                  'logger',
+                  'md4',
+                  'monitor_upstream',
+                  'ntlm_auth',
+                  'ntlm_messages',
+                  'ntlm_procs',
+                  'proxy_client',
+                  'server',
+                  'U32',
+                  'utils',
+                  'win32console'],
     data_files=[("",["server.cfg"]),],
     description='NTLM Authorization Proxy Server',
     author='Dmitry A. Rozmanov',
