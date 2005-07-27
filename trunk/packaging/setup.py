@@ -22,9 +22,7 @@
 #
 # setup.py
 from distutils.core import setup
-import py2exe
-import sys
-import re
+import py2exe, sys, re, string
 sys.argv.append("py2exe")
 
 # Hmmmmmm.
@@ -36,6 +34,17 @@ newcode = re.sub(repline, re.search(repline, code).group('before')+"'./'"+re.sea
 fileh = open('main.py', 'w')
 fileh.write(newcode)
 fileh.close()
+
+_ver = string.replace(string.split(sys.version)[0], '.', '')[:2]
+_thisdir = 'py%s' % _ver
+sys.path.append('lib/%s' % _thisdir)
+
+try:
+    import _win32console
+except ImportError:
+    win32console_mod = ''
+else:
+    win32console_mod = '%s/_win32console.pyd'
 
 setup(name='ntlmaps',
     version='0.9.9.7',
@@ -58,9 +67,11 @@ setup(name='ntlmaps',
         'proxy_client',
         'server',
         'U32',
-        'utils'],
+        'utils',
+        'win32console.py',
+        win32console_mod],
     data_files=[("",["server.cfg"]),],
-    description='NTLM local Proxy',
+    description='NTLM Authorization Proxy Server',
     author='Dmitry A. Rozmanov',
     author_email='<dima@xenon.spb.ru',
     url='http://ntlmaps.sourceforge.net/',
