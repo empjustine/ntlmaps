@@ -44,7 +44,7 @@ try:
 except ImportError:
     win32console_mod = ''
 else:
-    win32console_mod = '%s/_win32console.pyd'
+    win32console_mod = '%s/_win32console.pyd' % _thisdir
 
 setup(name='ntlmaps',
     version='0.9.9.7',
