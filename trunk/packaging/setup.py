@@ -44,12 +44,12 @@ try:
 except ImportError:
     win32console_mod = ''
 else:
-    win32console_mod = '%s/_win32console.pyd' % _thisdir
+    win32console_mod = '%s/_win32console' % _thisdir
 
 setup(name='ntlmaps',
     version='0.9.9.7',
     console=["main.py"],
-    package_dir = {'': 'lib'},
+    package_dir = {'': ['lib', '']},
     options = {"py2exe": {"packages": ["encodings"],
                           "optimize": 2}},
     py_modules = ['basic_auth',
@@ -69,7 +69,7 @@ setup(name='ntlmaps',
         'server',
         'U32',
         'utils',
-        'win32console.py',
+        'win32console',
         win32console_mod],
     data_files=[("",["server.cfg"]),],
     description='NTLM Authorization Proxy Server',
