@@ -49,7 +49,7 @@ else:
 setup(name='ntlmaps',
     version='0.9.9.7',
     console=["main.py"],
-    package_dir = {'': ['lib', '']},
+    package_dir = ['.', 'lib', 'lib/py15', 'lib/py24'],
     options = {"py2exe": {"packages": ["encodings"],
                           "optimize": 2}},
     py_modules = ['basic_auth',
