@@ -35,7 +35,7 @@ def read_config(fname):
                 else:
                     parts = string.split(workingLine, ':')
                     if len(parts) > 1:
-                        res[section_name][string.strip(parts[0])] = string.strip(parts[1])
+                        res[section_name][string.strip(parts[0])] = string.strip(string.join(parts[1:], ':'))
     return res
 
 #-------------------------------------------------------------------------------------------
