@@ -21,6 +21,8 @@
 import sys
 import ntlmaps
 
+# to allow running from source distribution
+sys.path = list((os.getcwd(),)) + sys.path
 
 #--------------------------------------------------------------
 # config affairs
