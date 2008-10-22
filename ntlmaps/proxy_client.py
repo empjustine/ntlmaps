@@ -309,8 +309,24 @@ class proxy_HTTP_Client:
             self.logger.log("*** No server's data to send to the client. (server's buffer - %d bytes)\n" % len(self.rserver_buffer))
     #-----------------------------------------------------------------------
     def proxy_send_client_header(self):
-        self.logger.log('*** Sending client request header to remote server...')
-        ok = self.client_head_obj.send(self.rserver_socket)
+        ok = 0
+    
+        if self.config['NTLM_AUTH']['NTLM_TO_BASIC'] and self.client_head_obj.has_param('Proxy-Authorization'):
+            # Assuming Proxy-Authorization parameter contains Basic credentials.
+            # Masking it out, because of unsafety and unnecessarity.
+        
+            proxy_authorization_values = self.client_head_obj.get_param_values('Proxy-Authorization')
+            self.client_head_obj.del_param('Proxy-Authorization')
+        
+            self.logger.log('*** Sending client request header without Proxy-Authorization parameter to remote server...')
+            ok = self.client_head_obj.send(self.rserver_socket)
+        
+            for value in proxy_authorization_values:
+                self.client_head_obj.add_param_value('Proxy-Authorization', value)
+        else:
+            self.logger.log('*** Sending client request header to remote server...')
+            ok = self.client_head_obj.send(self.rserver_socket)
+
         if ok:
             self.client_header_sent = 1
             self.logger.log('Done.\n')

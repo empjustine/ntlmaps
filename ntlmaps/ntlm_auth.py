@@ -314,7 +314,12 @@ class ntlm_auther:
         user, password = self.get_credentials_from_basic(connection, error_code)
         if user:
             connection.logger.log("*** Found Basic credentials in client's header.\n")
-            environment['USER'] = user
+            
+            if environment['UNICODE']:
+                environment['USER'] = utils.str2unicode(string.upper(user))
+            else:
+                environment['USER'] = string.upper(user)
+
             #environment['PASSWORD'] = password
             connection.logger.log("*** Basic User/Password: %s/%s.\n" % (user, password))
 
