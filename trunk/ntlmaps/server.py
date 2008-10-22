@@ -18,7 +18,7 @@
 #
 
 import socket, thread, sys, signal, getpass
-import proxy_client, monitor_upstream, ntlm_procs
+import proxy_client, monitor_upstream, ntlm_procs, base64
 
 #--------------------------------------------------------------
 class AuthProxyServer:
@@ -32,40 +32,45 @@ class AuthProxyServer:
         self.monLock = thread.allocate_lock() # For keeping the monitor thread sane
         self.watchUpstream = 0
         self.monitor = None
-        if not self.config['NTLM_AUTH']['NTLM_TO_BASIC']:
-            if not self.config['NTLM_AUTH']['PASSWORD']:
-                tries = 3
-                print '------------------------'
-                while tries and (not self.config['NTLM_AUTH']['PASSWORD']):
-                    tries = tries - 1
-                    if self.config['NTLM_AUTH']['COMPLEX_PASSWORD_INPUT']:
-                        try:
-                            import nt
-                        except ImportError:
-                            # Nothing to be done
-                            pass
-                        else:
-                            del nt       # Don't we all wish we could do that?
-                            try:
-                                import win32console
-                            except ImportError:
-                                sys.stderr.write('Unable to load win32console support; complex passwords can not be input.\n')
-                                password_prompt = getpass.getpass
-                            else:
-                                password_prompt = win32console.getpass
-                    else:
-                        password_prompt = getpass.getpass
-                    self.config['NTLM_AUTH']['PASSWORD'] = password_prompt('Your NT password to be used:')
-            if not self.config['NTLM_AUTH']['PASSWORD']:
-                print 'Sorry. PASSWORD is required, bye.'
-                sys.exit(1)
+        # If the hashes exist then use them.
+        if self.config['NTLM_AUTH']['LM_HASHED_PW'] and self.config['NTLM_AUTH']['NT_HASHED_PW']:
+            self.config['NTLM_AUTH']['LM_HASHED_PW'] = base64.decodestring(self.config['NTLM_AUTH']['LM_HASHED_PW'])
+            self.config['NTLM_AUTH']['NT_HASHED_PW'] = base64.decodestring(self.config['NTLM_AUTH']['NT_HASHED_PW'])
         else:
-            # TODO: migrate this properly so placeholders aren't required
-            self.config['NTLM_AUTH']['USER'] = 'placeholder_username'
-            self.config['NTLM_AUTH']['PASSWORD'] = 'placeholder_password'
-        # hashed passwords calculation
-        self.config['NTLM_AUTH']['LM_HASHED_PW'] = ntlm_procs.create_LM_hashed_password(self.config['NTLM_AUTH']['PASSWORD'])
-        self.config['NTLM_AUTH']['NT_HASHED_PW'] = ntlm_procs.create_NT_hashed_password(self.config['NTLM_AUTH']['PASSWORD'])
+            if not self.config['NTLM_AUTH']['NTLM_TO_BASIC']:
+                if not self.config['NTLM_AUTH']['PASSWORD']:
+                    tries = 3
+                    print '------------------------'
+                    while tries and (not self.config['NTLM_AUTH']['PASSWORD']):
+                        tries = tries - 1
+                        if self.config['NTLM_AUTH']['COMPLEX_PASSWORD_INPUT']:
+                            try:
+                                import nt
+                            except ImportError:
+                                # Nothing to be done
+                                pass
+                            else:
+                                del nt       # Don't we all wish we could do that?
+                                try:
+                                    import win32console
+                                except ImportError:
+                                    sys.stderr.write('Unable to load win32console support; complex passwords can not be input.\n')
+                                    password_prompt = getpass.getpass
+                                else:
+                                    password_prompt = win32console.getpass
+                        else:
+                            password_prompt = getpass.getpass
+                        self.config['NTLM_AUTH']['PASSWORD'] = password_prompt('Your NT password to be used:')
+                if not self.config['NTLM_AUTH']['PASSWORD']:
+                    print 'Sorry. PASSWORD is required, bye.'
+                    sys.exit(1)
+            else:
+                # TODO: migrate this properly so placeholders aren't required
+                self.config['NTLM_AUTH']['USER'] = 'placeholder_username'
+                self.config['NTLM_AUTH']['PASSWORD'] = 'placeholder_password'
+            # hashed passwords calculation
+            self.config['NTLM_AUTH']['LM_HASHED_PW'] = ntlm_procs.create_LM_hashed_password(self.config['NTLM_AUTH']['PASSWORD'])
+            self.config['NTLM_AUTH']['NT_HASHED_PW'] = ntlm_procs.create_NT_hashed_password(self.config['NTLM_AUTH']['PASSWORD'])
 
     #--------------------------------------------------------------
     def run(self):
