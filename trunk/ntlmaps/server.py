@@ -17,7 +17,7 @@
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 #
 
-import socket, thread, sys, signal, getpass, syslog, base64
+import socket, thread, sys, signal, getpass, base64
 import proxy_client, monitor_upstream, ntlm_procs
 
 #--------------------------------------------------------------
@@ -32,35 +32,26 @@ class AuthProxyServer:
         self.monLock = thread.allocate_lock() # For keeping the monitor thread sane
         self.watchUpstream = 0
         self.monitor = None
+        password_prompt = getpass.getpass
         # If the hashes exist then use them.
         if self.config['NTLM_AUTH']['LM_HASHED_PW'] and self.config['NTLM_AUTH']['NT_HASHED_PW']:
             self.config['NTLM_AUTH']['LM_HASHED_PW'] = base64.decodestring(self.config['NTLM_AUTH']['LM_HASHED_PW'])
             self.config['NTLM_AUTH']['NT_HASHED_PW'] = base64.decodestring(self.config['NTLM_AUTH']['NT_HASHED_PW'])
         else:
+            if self.config['NTLM_AUTH']['COMPLEX_PASSWORD_INPUT']:
+                try:
+                    import win32console
+                    password_prompt = win32console.getpass
+                except ImportError:
+                    sys.stderr.write('Unable to load win32console support; complex passwords can not be input.\n')
+                except AttributeError:
+                    sys.stderr.write('win32console lacking getpass support; complex passwords can not be input.\n')
             if not self.config['NTLM_AUTH']['NTLM_TO_BASIC']:
                 if not self.config['NTLM_AUTH']['PASSWORD']:
-                    syslog.syslog('ntlmaps: Failed to start - password required in configuration file.')
                     tries = 3
                     print '------------------------'
                     while tries and (not self.config['NTLM_AUTH']['PASSWORD']):
                         tries = tries - 1
-                        if self.config['NTLM_AUTH']['COMPLEX_PASSWORD_INPUT']:
-                            try:
-                                import nt
-                            except ImportError:
-                                # Nothing to be done
-                                pass
-                            else:
-                                del nt       # Don't we all wish we could do that?
-                                try:
-                                    import win32console
-                                except ImportError:
-                                    sys.stderr.write('Unable to load win32console support; complex passwords can not be input.\n')
-                                    password_prompt = getpass.getpass
-                                else:
-                                    password_prompt = win32console.getpass
-                        else:
-                            password_prompt = getpass.getpass
                         self.config['NTLM_AUTH']['PASSWORD'] = password_prompt('Your NT password to be used:')
                 if not self.config['NTLM_AUTH']['PASSWORD']:
                     print 'Sorry. PASSWORD is required, bye.'
