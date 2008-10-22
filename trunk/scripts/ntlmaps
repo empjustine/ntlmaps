@@ -18,11 +18,11 @@
 # Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 #
-import sys
-import ntlmaps
+import sys, os
 
 # to allow running from source distribution
 sys.path = list((os.getcwd(),)) + sys.path
+import ntlmaps
 
 #--------------------------------------------------------------
 # config affairs
