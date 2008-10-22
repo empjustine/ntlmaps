@@ -19,14 +19,13 @@
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 #
 import sys
-
-from ntlmaps import server, config, config_affairs
+import ntlmaps
 
 
 #--------------------------------------------------------------
 # config affairs
-# look for default config name in lib/config.py
-conf = config.read_config(config.findConfigFileNameInArgv(sys.argv, __init__.ntlmaps_dir+'/'))
+# look for default config name in ntlmaps/config.py
+conf = ntlmaps.config.read_config(ntlmaps.config.findConfigFileNameInArgv(sys.argv))
 
 conf['GENERAL']['VERSION'] = '0.9.9.7'
 
@@ -34,10 +33,10 @@ conf['GENERAL']['VERSION'] = '0.9.9.7'
 print 'NTLM authorization Proxy Server v%s' % conf['GENERAL']['VERSION']
 print 'Copyright (C) 2001-2005 by Dmitry Rozmanov, Darryl Dixon, and others.'
 
-config = config_affairs.arrange(conf)
+config = ntlmaps.config_affairs.arrange(conf)
 
 
 #--------------------------------------------------------------
 # let's run it
-serv = server.AuthProxyServer(config)
+serv = ntlmaps.server.AuthProxyServer(config)
 serv.run()
