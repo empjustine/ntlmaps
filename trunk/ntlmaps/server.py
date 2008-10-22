@@ -17,8 +17,8 @@
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 #
 
-import socket, thread, sys, signal, getpass
-import proxy_client, monitor_upstream, ntlm_procs, base64
+import socket, thread, sys, signal, getpass, syslog, base64
+import proxy_client, monitor_upstream, ntlm_procs
 
 #--------------------------------------------------------------
 class AuthProxyServer:
@@ -39,6 +39,7 @@ class AuthProxyServer:
         else:
             if not self.config['NTLM_AUTH']['NTLM_TO_BASIC']:
                 if not self.config['NTLM_AUTH']['PASSWORD']:
+                    syslog.syslog('ntlmaps: Failed to start - password required in configuration file.')
                     tries = 3
                     print '------------------------'
                     while tries and (not self.config['NTLM_AUTH']['PASSWORD']):
