@@ -50,7 +50,10 @@ def arrange(conf):
     conf['GENERAL']['HOST'] = hostname
     try:
         externalIP = socket.gethostbyname_ex(hostname)[2]
-    except (socket.error): #socket.gaierror in Python 2.x
+    except socket.error: # Python 1.5
+        print "ERROR: Unable to get the IP address of this machine.  This is not a fatal problem, but may cause problems for you using this proxy in some scenarios."
+        externalIP = []
+    except socket.gaierror: # Python 2.x
         print "ERROR: Unable to get the IP address of this machine.  This is not a fatal problem, but may cause problems for you using this proxy in some scenarios."
         externalIP = []
     conf['GENERAL']['HOST_IP_LIST'] = externalIP + ['127.0.0.1']
