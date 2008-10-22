@@ -301,6 +301,7 @@ class proxy_HTTP_Client:
                 if self.rserver_all_got:
                     self.rserver_data_sent = 1
                     self.logger.log('*** Sent ALL the data from remote server to client. (Server buffer - %d bytes)\n' % len(self.rserver_buffer))
+                    self.client_socket.flush()
             except:
                 self.logger.log('*** Exception by sending data to client. Client closed connection.\n')
                 self.client_socket_closed = 1
