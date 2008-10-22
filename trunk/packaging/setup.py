@@ -22,37 +22,29 @@
 #
 # setup.py
 from distutils.core import setup
-import py2exe, sys, re, string, os
-sys.argv.append("py2exe")
-
-# Hmmmmmm.
-repline = re.compile("(?P<before>^conf.*?)__init__.*?(?P<after>\)\)$)", re.M|re.S)
-fileh = open('main.py', 'r')
-code = fileh.read()
-fileh.close()
-newcode = re.sub(repline, re.search(repline, code).group('before')+"'./'"+re.search(repline, code).group('after'), code)
-fileh = open('main.py', 'w')
-fileh.write(newcode)
-fileh.close()
-
-_ver = string.replace(string.split(sys.version)[0], '.', '')[:2]
-_thisdir = 'py%s' % _ver
-sys.path.append('lib/%s' % _thisdir)
+import sys, re, string, os
 
 try:
-    import _win32console
-except ImportError:
-    pass
+    import py2exe 
+    sys.argv.append("py2exe")
+    use_py2exe=True
+except:
+    use_py2exe=False
+
+
+if use_py2exe:
+    serverCfgDir=''
 else:
-    os.rename('lib/%s/_win32console.pyd' % _thisdir, 'lib/_win32console.pyd')
+    serverCfgDir='/etc/ntlmaps'
 
 setup(name='ntlmaps',
-      version='0.9.9.7',
+      version='0.9.9.8',
       description='NTLM Authorization Proxy Server',
       url='http://ntlmaps.sourceforge.net/',
       packages=['ntlmaps'],
       scripts=['scripts/ntlmaps', 'scripts/ntlmaps-hashes'],
-      data_files=[('/etc/ntlmaps', ['server.cfg'])],
-      options = {"py2exe": {"packages": ["encodings", "_win32console"],
+      data_files=[(serverCfgDir, ['server.cfg'])],
+      options = {"py2exe": {"packages": ["encodings", "win32console"],
                             "optimize": 2}},
+      console = ['scripts/ntlmaps', 'scripts/ntlmaps-hashes'],
       )

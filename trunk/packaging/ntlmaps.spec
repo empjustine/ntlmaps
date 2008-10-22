@@ -27,11 +27,11 @@ using NTLM method.
 %setup -q
 
 %build
-%{__python} setup.py build
+%{__python} packaging/setup.py build
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
+%{__python} packaging/setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
 dos2unix COPYING doc/*
 
 %clean
