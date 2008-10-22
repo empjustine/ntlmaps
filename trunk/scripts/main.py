@@ -18,11 +18,9 @@
 # Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 #
-import __init__
-
 import sys
 
-import server, config, config_affairs
+from ntlmaps import server, config, config_affairs
 
 
 #--------------------------------------------------------------
