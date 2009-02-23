@@ -46,5 +46,4 @@ setup(name='ntlmaps',
       data_files=[(serverCfgDir, ['server.cfg'])],
       options = {"py2exe": {"packages": ["encodings", "win32console"],
                             "optimize": 2}},
-      console = ['scripts/ntlmaps', 'scripts/ntlmaps-hashes'],
       )
