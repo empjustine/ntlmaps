@@ -1,10 +1,10 @@
 # ntlmaps.spec
 # Copyright (C) 2004 Darryl Dixon <esrever_otua@pythonhacker.is-a-geek.net>
-# This program may be freely redistributed under the terms of the GNU GPLv2
+# This program may be freely redistributed under the terms of the GNU GPLv2+
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name: ntlmaps
-Version: 0.9.9.8
+Version: 1.0
 Release: 1%{?dist}
 Summary: NTLM Authorization Proxy Server
 
@@ -46,6 +46,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/%{name}*
 
 %changelog
+* Mon Feb 23 2009 Matt Domsch <mdomsch@fedoraproject.org> - 1.0-1
+- minor cleanups.
+- finally a 1.0 release!
+
 * Tue Oct 21 2008 Matt Domsch <mdomsch@fedoraproject.org> - 0.9.9.8-1
 - cleanup for Fedora packaging
 

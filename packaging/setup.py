@@ -38,7 +38,7 @@ else:
     serverCfgDir='/etc/ntlmaps'
 
 setup(name='ntlmaps',
-      version='0.9.9.8',
+      version='1.0',
       description='NTLM Authorization Proxy Server',
       url='http://ntlmaps.sourceforge.net/',
       packages=['ntlmaps'],
