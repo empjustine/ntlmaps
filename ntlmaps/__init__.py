@@ -18,4 +18,4 @@
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 #
 from ntlmaps import config, config_affairs, server
-all = ('config', 'config_affairs', 'server', 'ntlmaps_dir')
+all = ('config', 'config_affairs', 'server')
