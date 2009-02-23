@@ -29,7 +29,7 @@ import ntlmaps
 # look for default config name in ntlmaps/config.py
 conf = ntlmaps.config.read_config(ntlmaps.config.findConfigFileNameInArgv(sys.argv))
 
-conf['GENERAL']['VERSION'] = '0.9.9.7'
+conf['GENERAL']['VERSION'] = '1.0'
 
 #--------------------------------------------------------------
 print 'NTLM authorization Proxy Server v%s' % conf['GENERAL']['VERSION']
