@@ -11,7 +11,7 @@ Summary: NTLM Authorization Proxy Server
 Group: Applications/Internet
 License: GPLv2+
 URL: http://ntlmaps.sourceforge.net
-Source0:        http://downloads.sourceforge.net/ntlmaps/%{name}-%{version}.tar.gz
+Source0:        http://downloads.sourceforge.net/ntlmaps/%{name}-%{version}.tar.bz2
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 BuildRequires: python-devel >= 1.5.2, dos2unix
 BuildArch: noarch
