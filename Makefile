@@ -8,28 +8,45 @@ RELEASE_STRING := $(RELEASE_NAME)-$(RELEASE_VERSION)
 
 SPEC=ntlmaps.spec
 TARBALL=dist/$(RELEASE_STRING).tar.bz2
+ZIP=dist/$(RELEASE_STRING).zip
 .PHONY = all tarball
 
 all:
 
 clean:
-	-rm -rf *.tar.gz *.rpm *~ dist/ build
+	-rm -rf *.tar.gz *.rpm *~ dist/ build/
 
-tarball: clean $(TARBALL)
+tarball: $(TARBALL)
+zip: $(ZIP)
+
+releasedir:
+	cp -ar ../trunk $${tmp_dir}/$(RELEASE_STRING) ; \
+	find $${tmp_dir}/$(RELEASE_STRING) -depth -name .svn -type d -exec rm -rf \{\} \; ; \
+	find $${tmp_dir}/$(RELEASE_STRING) -depth -name lib -type d -exec rm -rf \{\} \; ; \
+	find $${tmp_dir}/$(RELEASE_STRING) -depth -name dist -type d -exec rm -rf \{\} \; ; \
+	find $${tmp_dir}/$(RELEASE_STRING) -depth -name build -type d -exec rm -rf \{\} \; ; \
+	find $${tmp_dir}/$(RELEASE_STRING) -depth -name \*~ -type f -exec rm -f \{\} \; ; \
+	find $${tmp_dir}/$(RELEASE_STRING) -depth -name \*.rpm -type f -exec rm -f \{\} \; ; \
+	find $${tmp_dir}/$(RELEASE_STRING) -depth -name \*.tar.gz -type f -exec rm -f \{\} \; ; \
+	sync ; sync ; sync ;
 
 $(TARBALL):
 	sync ; sync ; sync
 	mkdir -p dist
 	tmp_dir=`mktemp -d /tmp/ntlmaps.XXXXXXXX` ; \
-	cp -ar ../trunk $${tmp_dir}/$(RELEASE_STRING) ; \
-	find $${tmp_dir}/$(RELEASE_STRING) -depth -name .git -type d -exec rm -rf \{\} \; ; \
-	find $${tmp_dir}/$(RELEASE_STRING) -depth -name .svn -type d -exec rm -rf \{\} \; ; \
-	find $${tmp_dir}/$(RELEASE_STRING) -depth -name dist -type d -exec rm -rf \{\} \; ; \
-	find $${tmp_dir}/$(RELEASE_STRING) -depth -name \*~ -type f -exec rm -f \{\} \; ; \
-	find $${tmp_dir}/$(RELEASE_STRING) -depth -name \*.rpm -type f -exec rm -f \{\} \; ; \
-	find $${tmp_dir}/$(RELEASE_STRING) -depth -name \*.tar.gz -type f -exec rm -f \{\} \; ; \
-	sync ; sync ; sync ; \
+	make releasedir tmp_dir=$${tmp_dir} ; \
 	tar cvjf $(TARBALL) -C $${tmp_dir} $(RELEASE_STRING) ; \
+	rm -rf $${tmp_dir} ;
+
+$(ZIP):
+	sync ; sync ; sync
+	mkdir -p dist
+	oldcwd=`pwd` ; \
+	tmp_dir=`mktemp -d /tmp/ntlmaps.XXXXXXXX` ; \
+	make releasedir tmp_dir=$${tmp_dir} ; \
+	pushd $${tmp_dir} ; \
+	zip -r $${oldcwd}/$(ZIP) $(RELEASE_STRING) ; \
+	popd ; \
 	rm -rf $${tmp_dir} ;
 
 rpm: tarball $(SPEC)
