@@ -6,7 +6,7 @@ RELEASE_NAME := ntlmaps
 RELEASE_VERSION := $(RELEASE_MAJOR).$(RELEASE_MINOR)$(RELEASE_EXTRALEVEL)
 RELEASE_STRING := $(RELEASE_NAME)-$(RELEASE_VERSION)
 
-SPEC=ntlmaps.spec
+SPEC=packaging/ntlmaps.spec
 TARBALL=dist/$(RELEASE_STRING).tar.bz2
 ZIP=dist/$(RELEASE_STRING).zip
 .PHONY = all tarball
@@ -14,7 +14,7 @@ ZIP=dist/$(RELEASE_STRING).zip
 all:
 
 clean:
-	-rm -rf *.tar.gz *.rpm *~ dist/ build/
+	-rm -rf *.rpm *~ dist/ build/
 
 tarball: $(TARBALL)
 zip: $(ZIP)
@@ -27,7 +27,6 @@ releasedir:
 	find $${tmp_dir}/$(RELEASE_STRING) -depth -name build -type d -exec rm -rf \{\} \; ; \
 	find $${tmp_dir}/$(RELEASE_STRING) -depth -name \*~ -type f -exec rm -f \{\} \; ; \
 	find $${tmp_dir}/$(RELEASE_STRING) -depth -name \*.rpm -type f -exec rm -f \{\} \; ; \
-	find $${tmp_dir}/$(RELEASE_STRING) -depth -name \*.tar.gz -type f -exec rm -f \{\} \; ; \
 	sync ; sync ; sync ;
 
 $(TARBALL):
@@ -50,7 +49,7 @@ $(ZIP):
 	rm -rf $${tmp_dir} ;
 
 rpm: tarball $(SPEC)
-	tmp_dir=`mktemp -d` ; \
+	tmp_dir=`mktemp -d /tmp/ntlmaps.XXXXXXXX` ; \
 	mkdir -p $${tmp_dir}/{BUILD,RPMS,SRPMS,SPECS,SOURCES} ; \
 	cp $(TARBALL) $${tmp_dir}/SOURCES ; \
 	cp $(SPEC) $${tmp_dir}/SPECS ; \
