@@ -15,6 +15,10 @@ Source0:        http://downloads.sourceforge.net/ntlmaps/%{name}-%{version}.tar.
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 BuildRequires: python-devel >= 1.5.2, dos2unix
 BuildArch: noarch
+Requires(post): chkconfig
+Requires(preun): chkconfig
+# This is for /sbin/service
+Requires(preun): initscripts
 
 %description
 NTLM Authorization Proxy Server is a proxy software that allows you to
@@ -44,9 +48,20 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_sysconfdir}/%{name}
 %config(noreplace) %{_sysconfdir}/%{name}/server.cfg
 %{_bindir}/%{name}*
+%{_sysconfdir}/rc.d/init.d/%{name}
+
+%post
+/sbin/chkconfig --add %{name}
+
+%preun
+if [ $1 = 0 ] ; then
+    /sbin/service %{name} stop >/dev/null 2>&1
+    /sbin/chkconfig --del %{name}
+fi
+
 
 %changelog
-* Mon Feb 23 2009 Matt Domsch <mdomsch@fedoraproject.org> - 1.0-1
+* Mon Apr 13 2009 Matt Domsch <mdomsch@fedoraproject.org> - 1.0-1
 - minor cleanups.
 - finally a 1.0 release!
 
