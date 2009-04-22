@@ -33,7 +33,7 @@ conf['GENERAL']['VERSION'] = '1.0'
 
 #--------------------------------------------------------------
 print 'NTLM authorization Proxy Server v%s' % conf['GENERAL']['VERSION']
-print 'Copyright (C) 2001-2005 by Dmitry Rozmanov, Darryl Dixon, and others.'
+print 'Copyright (C) 2001-2009 by Dmitry Rozmanov, Darryl Dixon, and others.'
 
 config = ntlmaps.config_affairs.arrange(conf)
 
